@@ -1,217 +1,138 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quiz de Citas Bíblicas</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #1c1c1c;
-      color: #f1c40f;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 2rem;
-    }
-
-    .container {
-      max-width: 800px;
-      width: 100%;
-      background-color: #2c2c2c;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 0 20px rgba(241, 196, 15, 0.3);
-      text-align: center;
-    }
-
-    h1, h2 {
-      color: #f1c40f;
-      margin-bottom: 1rem;
-    }
-
-    .cita {
-      font-size: 1.3rem;
-      margin: 2rem 0;
-      color: #fff5d7;
-    }
-
-    .opciones {
-      margin: 1rem 0 2rem;
-    }
-
-    .opciones h3 {
-      color: #f1c40f;
-      margin-bottom: 0.5rem;
-    }
-
-    .opciones div {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
-    }
-
-    button {
-      padding: 0.75rem 1.25rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 10px;
-      background-color: #3b3b3b;
-      color: #f4e2c6;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    button:hover:not(:disabled) {
-      background-color: #f1c40f;
-      color: #1c1c1c;
-    }
-
-    button.correcto {
-      background-color: #28a745 !important;
-      color: #fff !important;
-    }
-
-    button.incorrecto {
-      background-color: #dc3545 !important;
-      color: #fff !important;
-    }
-
-    .oculto {
-      display: none;
-    }
-
-    #siguiente {
-      margin-top: 1rem;
-    }
-
-    #resultado {
-      margin-top: 2rem;
-    }
-
-    @media (max-width: 600px) {
-      .cita {
-        font-size: 1.1rem;
-      }
-      button {
-        width: 100%;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quiz de Citas Bíblicas</title>
+<style>
+  /* estilos resumidos */
+  body { background: #1c1c1c; color: #f1c40f; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+  .container { background: #2c2c2c; padding: 2rem; border-radius: 16px; max-width: 700px; box-shadow: 0 0 20px rgba(241, 196, 15, 0.5); text-align: center; }
+  h1, h2 { color: #f1c40f; margin-bottom: 1rem; }
+  .cita { font-size: 1.5rem; margin: 1.5rem 0; color: #fff; }
+  .botones { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 1rem; }
+  button { padding: 0.8rem 1.5rem; font-size: 1rem; border: none; border-radius: 12px; background-color: #444; color: #f1c40f; cursor: pointer; transition: 0.3s; }
+  button:hover { background-color: #f1c40f; color: #2c2c2c; }
+  button.correcto { background-color: #27ae60 !important; color: #fff !important; }
+  button.incorrecto { background-color: #c0392b !important; color: #fff !important; }
+  button#siguiente { background-color: #f39c12; color: #2c2c2c; }
+  button#siguiente:hover { background-color: #d68910; }
+  .oculto { display: none; }
+</style>
 </head>
 <body>
   <div class="container" id="quiz-box">
     <h1>Quiz de Citas Bíblicas</h1>
-    <div class="cita" id="cita"></div>
+    <div class="cita" id="cita">Aquí va la cita</div>
 
-    <div class="opciones">
+    <div>
       <h3>¿En qué libro está?</h3>
-      <div id="opciones-libro"></div>
+      <div id="opciones-libro" class="botones"></div>
     </div>
 
-    <div class="opciones">
-      <h3>¿En qué capítulo?</h3>
-      <div id="opciones-capitulo"></div>
+    <div>
+      <h3>¿En qué capítulo está?</h3>
+      <div id="opciones-capitulo" class="botones"></div>
     </div>
 
     <button id="siguiente" class="oculto">Siguiente</button>
+
+    <div id="resultado" class="oculto">
+      <h2>Resultados</h2>
+      <p id="libro-score"></p>
+      <p id="capitulo-score"></p>
+    </div>
   </div>
 
-  <div class="container oculto" id="resultado">
-    <h2>Resultados</h2>
-    <p id="libro-score"></p>
-    <p id="capitulo-score"></p>
-    <button onclick="location.reload()">Volver a comenzar</button>
-  </div>
+<script>
+let citas = [];
+let indice = 0;
+let aciertosLibro = 0;
+let aciertosCapitulo = 0;
 
-  <script>
-    let citas = [];
-    let indice = 0;
-    let aciertosLibro = 0;
-    let aciertosCapitulo = 0;
+const citaElem = document.getElementById("cita");
+const opcionesLibro = document.getElementById("opciones-libro");
+const opcionesCapitulo = document.getElementById("opciones-capitulo");
+const siguienteBtn = document.getElementById("siguiente");
+const resultado = document.getElementById("resultado");
+const libroScore = document.getElementById("libro-score");
+const capituloScore = document.getElementById("capitulo-score");
 
-    const citaElem = document.getElementById("cita");
-    const opcionesLibro = document.getElementById("opciones-libro");
-    const opcionesCapitulo = document.getElementById("opciones-capitulo");
-    const siguienteBtn = document.getElementById("siguiente");
-    const resultado = document.getElementById("resultado");
-    const libroScore = document.getElementById("libro-score");
-    const capituloScore = document.getElementById("capitulo-score");
+fetch('citas.json')
+  .then(res => res.json())
+  .then(data => {
+    citas = data;
+    mostrarCita();
+  }).catch(err => {
+    citaElem.textContent = 'Error al cargar las citas: ' + err;
+  });
 
-    fetch('citas.json')
-      .then(res => res.json())
-      .then(data => {
-        citas = data;
-        mostrarCita();
-      });
+function mostrarCita() {
+  limpiar();
+  const actual = citas[indice];
+  citaElem.textContent = actual.cita;
 
-    function mostrarCita() {
-      limpiar();
-      const actual = citas[indice];
-      citaElem.textContent = actual.cita;
+  actual.opciones_libro.forEach(op => {
+    const btn = document.createElement("button");
+    btn.textContent = op;
+    btn.onclick = () => seleccionarLibro(btn, op === actual.libro);
+    opcionesLibro.appendChild(btn);
+  });
 
-      actual.opciones_libro.forEach(libro => {
-        const btn = document.createElement("button");
-        btn.textContent = libro;
-        btn.onclick = () => seleccionar(btn, libro === actual.libro, opcionesLibro, "libro");
-        opcionesLibro.appendChild(btn);
-      });
+  actual.opciones_capitulo.forEach(op => {
+    const btn = document.createElement("button");
+    btn.textContent = op;
+    btn.onclick = () => seleccionarCapitulo(btn, op === actual.capitulo);
+    opcionesCapitulo.appendChild(btn);
+  });
+}
 
-      actual.opciones_capitulo.forEach(cap => {
-        const btn = document.createElement("button");
-        btn.textContent = cap;
-        btn.onclick = () => seleccionar(btn, cap === actual.capitulo, opcionesCapitulo, "capitulo");
-        opcionesCapitulo.appendChild(btn);
-      });
-    }
+function seleccionarLibro(boton, correcto) {
+  const botones = opcionesLibro.querySelectorAll("button");
+  botones.forEach(b => b.disabled = true);
+  boton.classList.add(correcto ? "correcto" : "incorrecto");
+  if (correcto) aciertosLibro++;
+  verificarSiguiente();
+}
 
-    let respondidoLibro = false;
-    let respondidoCapitulo = false;
+function seleccionarCapitulo(boton, correcto) {
+  const botones = opcionesCapitulo.querySelectorAll("button");
+  botones.forEach(b => b.disabled = true);
+  boton.classList.add(correcto ? "correcto" : "incorrecto");
+  if (correcto) aciertosCapitulo++;
+  verificarSiguiente();
+}
 
-    function seleccionar(boton, correcto, contenedor, tipo) {
-      const botones = contenedor.querySelectorAll("button");
-      botones.forEach(b => b.disabled = true);
-      boton.classList.add(correcto ? "correcto" : "incorrecto");
+function verificarSiguiente() {
+  const libros = opcionesLibro.querySelectorAll("button");
+  const capitulos = opcionesCapitulo.querySelectorAll("button");
+  const deshabilitados = [...libros, ...capitulos].filter(b => b.disabled);
+  if (deshabilitados.length === libros.length + capitulos.length) {
+    siguienteBtn.classList.remove("oculto");
+  }
+}
 
-      if (tipo === "libro") {
-        if (correcto) aciertosLibro++;
-        respondidoLibro = true;
-      } else {
-        if (correcto) aciertosCapitulo++;
-        respondidoCapitulo = true;
-      }
+siguienteBtn.onclick = () => {
+  indice++;
+  if (indice < citas.length) {
+    mostrarCita();
+    siguienteBtn.classList.add("oculto");
+  } else {
+    mostrarResultado();
+  }
+};
 
-      if (respondidoLibro && respondidoCapitulo) {
-        siguienteBtn.classList.remove("oculto");
-      }
-    }
+function mostrarResultado() {
+  document.getElementById("quiz-box").classList.add("oculto");
+  resultado.classList.remove("oculto");
+  libroScore.textContent = `Aciertos de libro: ${aciertosLibro} de ${citas.length} (${Math.round((aciertosLibro/citas.length)*100)}%)`;
+  capituloScore.textContent = `Aciertos de capítulo: ${aciertosCapitulo} de ${citas.length} (${Math.round((aciertosCapitulo/citas.length)*100)}%)`;
+}
 
-    siguienteBtn.onclick = () => {
-      indice++;
-      respondidoLibro = false;
-      respondidoCapitulo = false;
-      if (indice < citas.length) {
-        mostrarCita();
-        siguienteBtn.classList.add("oculto");
-      } else {
-        mostrarResultado();
-      }
-    };
-
-    function mostrarResultado() {
-      document.getElementById("quiz-box").classList.add("oculto");
-      resultado.classList.remove("oculto");
-      libroScore.textContent = `Aciertos en libro: ${aciertosLibro} de ${citas.length} (${Math.round((aciertosLibro / citas.length) * 100)}%)`;
-      capituloScore.textContent = `Aciertos en capítulo: ${aciertosCapitulo} de ${citas.length} (${Math.round((aciertosCapitulo / citas.length) * 100)}%)`;
-    }
-
-    function limpiar() {
-      opcionesLibro.innerHTML = "";
-      opcionesCapitulo.innerHTML = "";
-    }
-  </script>
+function limpiar() {
+  opcionesLibro.innerHTML = "";
+  opcionesCapitulo.innerHTML = "";
+}
+</script>
 </body>
 </html>
