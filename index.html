@@ -1,138 +1,121 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Quiz de Citas Bíblicas</title>
-<style>
-  /* estilos resumidos */
-  body { background: #1c1c1c; color: #f1c40f; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-  .container { background: #2c2c2c; padding: 2rem; border-radius: 16px; max-width: 700px; box-shadow: 0 0 20px rgba(241, 196, 15, 0.5); text-align: center; }
-  h1, h2 { color: #f1c40f; margin-bottom: 1rem; }
-  .cita { font-size: 1.5rem; margin: 1.5rem 0; color: #fff; }
-  .botones { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 1rem; }
-  button { padding: 0.8rem 1.5rem; font-size: 1rem; border: none; border-radius: 12px; background-color: #444; color: #f1c40f; cursor: pointer; transition: 0.3s; }
-  button:hover { background-color: #f1c40f; color: #2c2c2c; }
-  button.correcto { background-color: #27ae60 !important; color: #fff !important; }
-  button.incorrecto { background-color: #c0392b !important; color: #fff !important; }
-  button#siguiente { background-color: #f39c12; color: #2c2c2c; }
-  button#siguiente:hover { background-color: #d68910; }
-  .oculto { display: none; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz Bíblico - Selección de Bloque</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #f5f1e9;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #b77c00;
+    }
+    #listaBloques button {
+      margin: 0.5rem 0.5rem 0 0;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      border: 1px solid #dbb22d;
+      border-radius: 5px;
+      background: #fff7e1;
+      transition: background-color 0.3s;
+    }
+    #listaBloques button:hover {
+      background-color: #b77c00;
+      color: white;
+    }
+    #quizContainer {
+      display: none;
+      margin-top: 1rem;
+    }
+    /* Puedes añadir más estilos para quiz después */
+  </style>
 </head>
 <body>
-  <div class="container" id="quiz-box">
-    <h1>Quiz de Citas Bíblicas</h1>
-    <div class="cita" id="cita">Aquí va la cita</div>
+  <h1>Quiz Bíblico de Citas</h1>
 
-    <div>
-      <h3>¿En qué libro está?</h3>
-      <div id="opciones-libro" class="botones"></div>
-    </div>
+  <div id="selectorBloques">
+    <h2>Elige un bloque para comenzar</h2>
+    <div id="listaBloques"></div>
+  </div>
 
-    <div>
-      <h3>¿En qué capítulo está?</h3>
-      <div id="opciones-capitulo" class="botones"></div>
-    </div>
-
-    <button id="siguiente" class="oculto">Siguiente</button>
-
-    <div id="resultado" class="oculto">
-      <h2>Resultados</h2>
-      <p id="libro-score"></p>
-      <p id="capitulo-score"></p>
-    </div>
+  <div id="quizContainer">
+    <!-- Aquí luego cargaremos la pregunta y opciones -->
   </div>
 
 <script>
-let citas = [];
-let indice = 0;
-let aciertosLibro = 0;
-let aciertosCapitulo = 0;
+  // Tu JSON con preguntas
+  const preguntas = [
+    {
+      "bloque": 1,
+      "cita": "No os conforméis a este mundo, sino transformaos por la renovación de vuestra mente.",
+      "libro": "Romanos",
+      "capitulo": 12,
+      "opcion_1": "Romanos",
+      "opcion_2": "Corintios",
+      "opcion_3": "Efesios",
+      "opcion_4": "Gálatas",
+      "opcion_cap_1": 12,
+      "opcion_cap_2": 13,
+      "opcion_cap_3": 11,
+      "opcion_cap_4": 10
+    },
+    {
+      "bloque": 2,
+      "cita": "Amarás a tu prójimo como a ti mismo.",
+      "libro": "Mateo",
+      "capitulo": 22,
+      "opcion_1": "Mateo",
+      "opcion_2": "Levítico",
+      "opcion_3": "Deuteronomio",
+      "opcion_4": "Números",
+      "opcion_cap_1": 22,
+      "opcion_cap_2": 20,
+      "opcion_cap_3": 25,
+      "opcion_cap_4": 23
+    }
+  ];
 
-const citaElem = document.getElementById("cita");
-const opcionesLibro = document.getElementById("opciones-libro");
-const opcionesCapitulo = document.getElementById("opciones-capitulo");
-const siguienteBtn = document.getElementById("siguiente");
-const resultado = document.getElementById("resultado");
-const libroScore = document.getElementById("libro-score");
-const capituloScore = document.getElementById("capitulo-score");
+  // Extraemos bloques únicos y ordenados
+  const bloquesUnicos = [...new Set(preguntas.map(p => p.bloque))].sort((a,b) => a-b);
 
-fetch('citas.json')
-  .then(res => res.json())
-  .then(data => {
-    citas = data;
-    mostrarCita();
-  }).catch(err => {
-    citaElem.textContent = 'Error al cargar las citas: ' + err;
+  const listaBloquesElem = document.getElementById('listaBloques');
+  const selectorBloquesElem = document.getElementById('selectorBloques');
+  const quizContainer = document.getElementById('quizContainer');
+
+  // Mostrar botones para cada bloque
+  bloquesUnicos.forEach(bloque => {
+    const btn = document.createElement('button');
+    btn.textContent = `Bloque ${bloque}`;
+    btn.addEventListener('click', () => {
+      iniciarQuiz(bloque);
+    });
+    listaBloquesElem.appendChild(btn);
   });
 
-function mostrarCita() {
-  limpiar();
-  const actual = citas[indice];
-  citaElem.textContent = actual.cita;
+  function iniciarQuiz(bloqueElegido) {
+    // Ocultamos selector de bloques
+    selectorBloquesElem.style.display = 'none';
+    quizContainer.style.display = 'block';
 
-  actual.opciones_libro.forEach(op => {
-    const btn = document.createElement("button");
-    btn.textContent = op;
-    btn.onclick = () => seleccionarLibro(btn, op === actual.libro);
-    opcionesLibro.appendChild(btn);
-  });
+    // Filtrar preguntas del bloque elegido
+    preguntasDelBloque = preguntas.filter(p => p.bloque === bloqueElegido);
 
-  actual.opciones_capitulo.forEach(op => {
-    const btn = document.createElement("button");
-    btn.textContent = op;
-    btn.onclick = () => seleccionarCapitulo(btn, op === actual.capitulo);
-    opcionesCapitulo.appendChild(btn);
-  });
-}
+    // Por ahora solo mostramos en consola
+    console.log('Preguntas del bloque', bloqueElegido, preguntasDelBloque);
 
-function seleccionarLibro(boton, correcto) {
-  const botones = opcionesLibro.querySelectorAll("button");
-  botones.forEach(b => b.disabled = true);
-  boton.classList.add(correcto ? "correcto" : "incorrecto");
-  if (correcto) aciertosLibro++;
-  verificarSiguiente();
-}
-
-function seleccionarCapitulo(boton, correcto) {
-  const botones = opcionesCapitulo.querySelectorAll("button");
-  botones.forEach(b => b.disabled = true);
-  boton.classList.add(correcto ? "correcto" : "incorrecto");
-  if (correcto) aciertosCapitulo++;
-  verificarSiguiente();
-}
-
-function verificarSiguiente() {
-  const libros = opcionesLibro.querySelectorAll("button");
-  const capitulos = opcionesCapitulo.querySelectorAll("button");
-  const deshabilitados = [...libros, ...capitulos].filter(b => b.disabled);
-  if (deshabilitados.length === libros.length + capitulos.length) {
-    siguienteBtn.classList.remove("oculto");
+    // Aquí iremos mostrando la pregunta, opciones, etc. (próximo paso)
+    quizContainer.innerHTML = `<p>Comenzando bloque ${bloqueElegido} con ${preguntasDelBloque.length} preguntas.</p>`;
   }
-}
 
-siguienteBtn.onclick = () => {
-  indice++;
-  if (indice < citas.length) {
-    mostrarCita();
-    siguienteBtn.classList.add("oculto");
-  } else {
-    mostrarResultado();
-  }
-};
-
-function mostrarResultado() {
-  document.getElementById("quiz-box").classList.add("oculto");
-  resultado.classList.remove("oculto");
-  libroScore.textContent = `Aciertos de libro: ${aciertosLibro} de ${citas.length} (${Math.round((aciertosLibro/citas.length)*100)}%)`;
-  capituloScore.textContent = `Aciertos de capítulo: ${aciertosCapitulo} de ${citas.length} (${Math.round((aciertosCapitulo/citas.length)*100)}%)`;
-}
-
-function limpiar() {
-  opcionesLibro.innerHTML = "";
-  opcionesCapitulo.innerHTML = "";
-}
 </script>
 </body>
 </html>
+
