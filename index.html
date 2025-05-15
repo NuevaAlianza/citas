@@ -2,31 +2,270 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>App de Preguntas</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz de Citas Bíblicas</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #1f1f1f;
+      color: #f4e2c6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      color: #ffd700;
+      margin-bottom: 1rem;
+    }
+
+    .card {
+      background: #2c2c2c;
+      border: 1px solid #444;
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+    }
+
+    .quote {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #fff5d7;
+    }
+
+    .options {
+      display: grid;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .options h3 {
+      margin: 1rem 0 0.5rem;
+      color: #ffd700;
+    }
+
+    button {
+      padding: 0.75rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      background-color: #3b3b3b;
+      color: #f4e2c6;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #ffd700;
+      color: #1f1f1f;
+    }
+
+    .correct {
+      background-color: #28a745 !important;
+      color: white !important;
+    }
+
+    .incorrect {
+      background-color: #dc3545 !important;
+      color: white !important;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .results {
+      margin-top: 2rem;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Preguntas por Tema</h1>
-    <div id="seleccion">
-      <label for="tema">Selecciona un tema:</label>
-      <select id="temaSelect"></select>
-      <button id="iniciarBtn">Iniciar</button>
-    </div>
+  <h1>Quiz de Citas Bíblicas</h1>
+  <div class="card">
+    <div id="quote" class="quote"></div>
+    <div class="options">
+      <h3>¿En qué libro está?</h3>
+      <div id="bookOptions"></div>
 
-    <div id="contenido" class="oculto">
-      <div id="pregunta-container"></div>
-      <div id="opciones-container" class="opciones"></div>
-      <div id="timer" class="barra-tiempo"></div>
-      <div id="respuesta-container" class="oculto"></div>
-      <button id="mostrarRespuestaBtn" class="oculto">Mostrar Respuesta</button>
-      <button id="siguienteBtn" class="oculto">Siguiente</button>
+      <h3>¿En qué capítulo?</h3>
+      <div id="chapterOptions"></div>
     </div>
-
-    <div id="resultado-container" class="oculto"></div>
+    <button id="nextBtn" class="hidden">Siguiente</button>
+    <div id="results" class="results hidden"></div>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    const data = [
+      {
+        texto: "El Señor es mi pastor, nada me falta.",
+        libro_correcto: "Salmos",
+        libro_opciones: ["Proverbios", "Isaías", "Salmos", "Mateo"],
+        capitulo_correcto: 23,
+        capitulo_opciones: [1, 23, 91, 119]
+      },
+      {
+        texto: "Todo lo puedo en Cristo que me fortalece.",
+        libro_correcto: "Filipenses",
+        libro_opciones: ["Colosenses", "Efesios", "Filipenses", "Romanos"],
+        capitulo_correcto: 4,
+        capitulo_opciones: [2, 3, 4, 6]
+      },
+      {
+        texto: "Amarás al Señor tu Dios con todo tu corazón, con toda tu alma y con toda tu mente.",
+        libro_correcto: "Mateo",
+        libro_opciones: ["Mateo", "Marcos", "Lucas", "Éxodo"],
+        capitulo_correcto: 22,
+        capitulo_opciones: [10, 20, 22, 25]
+      },
+      {
+        texto: "Porque de tal manera amó Dios al mundo, que dio a su Hijo unigénito...",
+        libro_correcto: "Juan",
+        libro_opciones: ["Juan", "Lucas", "Génesis", "Hebreos"],
+        capitulo_correcto: 3,
+        capitulo_opciones: [1, 2, 3, 4]
+      },
+      {
+        texto: "El que habita al abrigo del Altísimo morará bajo la sombra del Omnipotente.",
+        libro_correcto: "Salmos",
+        libro_opciones: ["Salmos", "Isaías", "Eclesiastés", "Lamentaciones"],
+        capitulo_correcto: 91,
+        capitulo_opciones: [23, 27, 91, 100]
+      },
+      {
+        texto: "No temas, porque yo estoy contigo; no desmayes, porque yo soy tu Dios.",
+        libro_correcto: "Isaías",
+        libro_opciones: ["Jeremías", "Salmos", "Isaías", "Job"],
+        capitulo_correcto: 41,
+        capitulo_opciones: [40, 41, 42, 43]
+      },
+      {
+        texto: "En el principio creó Dios los cielos y la tierra.",
+        libro_correcto: "Génesis",
+        libro_opciones: ["Génesis", "Éxodo", "Juan", "Salmos"],
+        capitulo_correcto: 1,
+        capitulo_opciones: [1, 2, 3, 10]
+      },
+      {
+        texto: "Yo soy el camino, la verdad y la vida; nadie viene al Padre sino por mí.",
+        libro_correcto: "Juan",
+        libro_opciones: ["Mateo", "Lucas", "Juan", "Hechos"],
+        capitulo_correcto: 14,
+        capitulo_opciones: [12, 13, 14, 15]
+      },
+      {
+        texto: "Honra a tu padre y a tu madre.",
+        libro_correcto: "Éxodo",
+        libro_opciones: ["Deuteronomio", "Levítico", "Éxodo", "Mateo"],
+        capitulo_correcto: 20,
+        capitulo_opciones: [10, 12, 19, 20]
+      },
+      {
+        texto: "Lámpara es a mis pies tu palabra, y lumbrera a mi camino.",
+        libro_correcto: "Salmos",
+        libro_opciones: ["Proverbios", "Salmos", "Eclesiastés", "Hebreos"],
+        capitulo_correcto: 119,
+        capitulo_opciones: [23, 91, 119, 150]
+      }
+    ];
+
+    let index = 0;
+    let aciertosLibro = 0;
+    let aciertosCapitulo = 0;
+
+    const quote = document.getElementById("quote");
+    const bookOptions = document.getElementById("bookOptions");
+    const chapterOptions = document.getElementById("chapterOptions");
+    const nextBtn = document.getElementById("nextBtn");
+    const results = document.getElementById("results");
+
+    let libroRespondido = false;
+    let capituloRespondido = false;
+
+    function mostrarPregunta() {
+      libroRespondido = false;
+      capituloRespondido = false;
+      const actual = data[index];
+      quote.textContent = actual.texto;
+
+      bookOptions.innerHTML = "";
+      chapterOptions.innerHTML = "";
+      nextBtn.classList.add("hidden");
+
+      actual.libro_opciones.forEach(libro => {
+        const btn = document.createElement("button");
+        btn.textContent = libro;
+        btn.onclick = () => {
+          if (libro === actual.libro_correcto) {
+            btn.classList.add("correct");
+            aciertosLibro++;
+          } else {
+            btn.classList.add("incorrect");
+          }
+          libroRespondido = true;
+          desactivarBotones(bookOptions);
+          mostrarSiguienteSiListo();
+        };
+        bookOptions.appendChild(btn);
+      });
+
+      actual.capitulo_opciones.forEach(num => {
+        const btn = document.createElement("button");
+        btn.textContent = num;
+        btn.onclick = () => {
+          if (num === actual.capitulo_correcto) {
+            btn.classList.add("correct");
+            aciertosCapitulo++;
+          } else {
+            btn.classList.add("incorrect");
+          }
+          capituloRespondido = true;
+          desactivarBotones(chapterOptions);
+          mostrarSiguienteSiListo();
+        };
+        chapterOptions.appendChild(btn);
+      });
+    }
+
+    function desactivarBotones(container) {
+      [...container.children].forEach(btn => btn.disabled = true);
+    }
+
+    function mostrarSiguienteSiListo() {
+      if (libroRespondido && capituloRespondido) {
+        nextBtn.classList.remove("hidden");
+      }
+    }
+
+    nextBtn.onclick = () => {
+      index++;
+      if (index < data.length) {
+        mostrarPregunta();
+      } else {
+        mostrarResultados();
+      }
+    };
+
+    function mostrarResultados() {
+      document.querySelector(".options").classList.add("hidden");
+      quote.classList.add("hidden");
+      nextBtn.classList.add("hidden");
+      const total = data.length;
+      const res = `
+        <h2>Resultados</h2>
+        <p>Aciertos en libro: ${aciertosLibro} de ${total} (${Math.round(aciertosLibro / total * 100)}%)</p>
+        <p>Aciertos en capítulo: ${aciertosCapitulo} de ${total} (${Math.round(aciertosCapitulo / total * 100)}%)</p>
+      `;
+      results.innerHTML = res;
+      results.classList.remove("hidden");
+    }
+
+    mostrarPregunta();
+  </script>
 </body>
 </html>
