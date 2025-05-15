@@ -2,224 +2,206 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Quiz Bíblico - Selección de Bloque y Preguntas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz Bíblico por Bloques</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background: #f5f1e9;
+      font-family: sans-serif;
+      padding: 20px;
+      background: #fff8f0;
       color: #333;
     }
-    h1, h2 {
-      text-align: center;
-      color: #b77c00;
-    }
-    #listaBloques button,
-    .opcion-btn {
-      margin: 0.5rem 0.5rem 0 0;
-      padding: 0.6rem 1.2rem;
-      font-size: 1rem;
-      cursor: pointer;
-      border: 1px solid #dbb22d;
-      border-radius: 5px;
-      background: #fff7e1;
-      transition: background-color 0.3s;
-    }
-    #listaBloques button:hover,
-    .opcion-btn:hover {
-      background-color: #b77c00;
-      color: white;
-    }
-    #quizContainer {
-      margin-top: 1rem;
-      display: none;
-    }
-    .grupo-opciones {
-      margin: 1rem 0;
-    }
-    .grupo-opciones h3 {
-      margin-bottom: 0.3rem;
-    }
-    #siguienteBtn {
-      margin-top: 1rem;
-      padding: 0.6rem 1.5rem;
-      font-size: 1rem;
-      background-color: #b77c00;
-      color: white;
+    .hidden { display: none; }
+    button {
+      padding: 10px 15px;
+      margin: 5px;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
+      background-color: #f4a261;
+      color: white;
       cursor: pointer;
     }
-    #siguienteBtn:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
+    button:hover {
+      background-color: #e76f51;
+    }
+    .option-group { margin: 10px 0; }
+    .selected { background-color: #2a9d8f !important; }
+    .question-box {
+      margin: 20px 0;
+      padding: 15px;
+      background: #fdf6ec;
+      border-radius: 8px;
+      box-shadow: 0 0 5px #ccc;
     }
   </style>
 </head>
 <body>
-  <h1>Quiz Bíblico de Citas</h1>
 
-  <div id="selectorBloques">
-    <h2>Elige un bloque para comenzar</h2>
-    <div id="listaBloques"></div>
-  </div>
+  <h1>Quiz Bíblico</h1>
 
-  <div id="quizContainer">
-    <div id="preguntaTexto"></div>
+  <div id="bloques-container"></div>
 
-    <div class="grupo-opciones" id="opcionesLibro">
-      <h3>Elige el libro correcto:</h3>
-      <!-- Opciones libro aquí -->
+  <div id="quiz-container" class="hidden">
+    <div id="pregunta" class="question-box"></div>
+
+    <div class="option-group">
+      <strong>¿De qué libro es?</strong><br/>
+      <div id="libro-opciones"></div>
     </div>
 
-    <div class="grupo-opciones" id="opcionesCapitulo">
-      <h3>Elige el capítulo correcto:</h3>
-      <!-- Opciones capítulo aquí -->
+    <div class="option-group">
+      <strong>¿Qué capítulo?</strong><br/>
+      <div id="capitulo-opciones"></div>
     </div>
 
-    <button id="siguienteBtn" disabled>Siguiente pregunta</button>
+    <button id="siguiente-btn" class="hidden">Siguiente</button>
   </div>
 
-<script>
-  const preguntas = [
-    {
-      "bloque": 1,
-      "cita": "No os conforméis a este mundo, sino transformaos por la renovación de vuestra mente.",
-      "libro": "Romanos",
-      "capitulo": 12,
-      "opcion_1": "Romanos",
-      "opcion_2": "Corintios",
-      "opcion_3": "Efesios",
-      "opcion_4": "Gálatas",
-      "opcion_cap_1": 12,
-      "opcion_cap_2": 13,
-      "opcion_cap_3": 11,
-      "opcion_cap_4": 10
-    },
-    {
-      "bloque": 2,
-      "cita": "Amarás a tu prójimo como a ti mismo.",
-      "libro": "Mateo",
-      "capitulo": 22,
-      "opcion_1": "Mateo",
-      "opcion_2": "Levítico",
-      "opcion_3": "Deuteronomio",
-      "opcion_4": "Números",
-      "opcion_cap_1": 22,
-      "opcion_cap_2": 20,
-      "opcion_cap_3": 25,
-      "opcion_cap_4": 23
-    }
-  ];
+  <div id="resultado" class="hidden"></div>
 
-  const bloquesUnicos = [...new Set(preguntas.map(p => p.bloque))].sort((a,b) => a-b);
+  <script>
+    // Simulación de datos cargados (reemplazar con fetch si se usa archivo externo)
+    const preguntas = [
+      {
+        "bloque": 1,
+        "cita": "No os conforméis a este mundo, sino transformaos por la renovación de vuestra mente.",
+        "libro": "Romanos",
+        "capitulo": 12,
+        "opcion_1": "Romanos",
+        "opcion_2": "Corintios",
+        "opcion_3": "Efesios",
+        "opcion_4": "Gálatas",
+        "opcion_cap_1": 12,
+        "opcion_cap_2": 13,
+        "opcion_cap_3": 11,
+        "opcion_cap_4": 10
+      },
+      {
+        "bloque": 2,
+        "cita": "Amarás a tu prójimo como a ti mismo.",
+        "libro": "Mateo",
+        "capitulo": 22,
+        "opcion_1": "Mateo",
+        "opcion_2": "Levítico",
+        "opcion_3": "Deuteronomio",
+        "opcion_4": "Números",
+        "opcion_cap_1": 22,
+        "opcion_cap_2": 20,
+        "opcion_cap_3": 25,
+        "opcion_cap_4": 23
+      }
+    ];
 
-  const listaBloquesElem = document.getElementById('listaBloques');
-  const selectorBloquesElem = document.getElementById('selectorBloques');
-  const quizContainer = document.getElementById('quizContainer');
-  const preguntaTexto = document.getElementById('preguntaTexto');
-  const opcionesLibroDiv = document.getElementById('opcionesLibro');
-  const opcionesCapituloDiv = document.getElementById('opcionesCapitulo');
-  const siguienteBtn = document.getElementById('siguienteBtn');
+    const bloquesContainer = document.getElementById('bloques-container');
+    const quizContainer = document.getElementById('quiz-container');
+    const preguntaDiv = document.getElementById('pregunta');
+    const libroOpciones = document.getElementById('libro-opciones');
+    const capituloOpciones = document.getElementById('capitulo-opciones');
+    const siguienteBtn = document.getElementById('siguiente-btn');
+    const resultadoDiv = document.getElementById('resultado');
 
-  let preguntasDelBloque = [];
-  let indicePregunta = 0;
-  let respuestaLibroSeleccionada = null;
-  let respuestaCapituloSeleccionada = null;
+    let preguntasDelBloque = [];
+    let preguntaActual = 0;
+    let respuestas = [];
 
-  // Mostrar botones para cada bloque
-  bloquesUnicos.forEach(bloque => {
-    const btn = document.createElement('button');
-    btn.textContent = `Bloque ${bloque}`;
-    btn.addEventListener('click', () => {
-      iniciarQuiz(bloque);
-    });
-    listaBloquesElem.appendChild(btn);
-  });
+    let seleccionLibro = null;
+    let seleccionCapitulo = null;
 
-  function iniciarQuiz(bloqueElegido) {
-    selectorBloquesElem.style.display = 'none';
-    quizContainer.style.display = 'block';
-
-    preguntasDelBloque = preguntas.filter(p => p.bloque === bloqueElegido);
-    indicePregunta = 0;
-    mostrarPregunta(indicePregunta);
-  }
-
-  function crearBotonOpcion(texto, grupo, onClick) {
-    const btn = document.createElement('button');
-    btn.textContent = texto;
-    btn.className = 'opcion-btn';
-    btn.type = 'button';
-    btn.addEventListener('click', onClick);
-    return btn;
-  }
-
-  function mostrarPregunta(indice) {
-    respuestaLibroSeleccionada = null;
-    respuestaCapituloSeleccionada = null;
-    siguienteBtn.disabled = true;
-
-    const pregunta = preguntasDelBloque[indice];
-    preguntaTexto.textContent = pregunta.cita;
-
-    // Limpiar opciones anteriores
-    opcionesLibroDiv.querySelectorAll('button.opcion-btn').forEach(b => b.remove());
-    opcionesCapituloDiv.querySelectorAll('button.opcion-btn').forEach(b => b.remove());
-
-    // Crear botones para opciones libro
-    for (let i = 1; i <= 4; i++) {
-      const texto = pregunta[`opcion_${i}`];
-      const btn = crearBotonOpcion(texto, 'libro', () => {
-        respuestaLibroSeleccionada = texto;
-        marcarSeleccion(opcionesLibroDiv, btn);
-        habilitarSiguienteSiSeleccionado();
-      });
-      opcionesLibroDiv.appendChild(btn);
-    }
-
-    // Crear botones para opciones capítulo
-    for (let i = 1; i <= 4; i++) {
-      const texto = pregunta[`opcion_cap_${i}`];
-      const btn = crearBotonOpcion(texto, 'capitulo', () => {
-        respuestaCapituloSeleccionada = texto;
-        marcarSeleccion(opcionesCapituloDiv, btn);
-        habilitarSiguienteSiSeleccionado();
-      });
-      opcionesCapituloDiv.appendChild(btn);
-    }
-  }
-
-  // Marca la opción seleccionada visualmente, desmarca las demás del grupo
-  function marcarSeleccion(contenedor, btnSeleccionado) {
-    contenedor.querySelectorAll('button.opcion-btn').forEach(btn => {
-      btn.style.backgroundColor = (btn === btnSeleccionado) ? '#b77c00' : '#fff7e1';
-      btn.style.color = (btn === btnSeleccionado) ? 'white' : '#333';
-    });
-  }
-
-  // Habilita botón siguiente solo si ambas respuestas están seleccionadas
-  function habilitarSiguienteSiSeleccionado() {
-    siguienteBtn.disabled = !(respuestaLibroSeleccionada && respuestaCapituloSeleccionada);
-  }
-
-  siguienteBtn.addEventListener('click', () => {
-    indicePregunta++;
-    if (indicePregunta < preguntasDelBloque.length) {
-      mostrarPregunta(indicePregunta);
-    } else {
-      // Fin del bloque
-      quizContainer.innerHTML = `<h2>¡Has terminado el bloque!</h2>
-      <button id="volverBtn">Volver a bloques</button>`;
-      document.getElementById('volverBtn').addEventListener('click', () => {
-        location.reload();
+    function mostrarBloques() {
+      const bloquesUnicos = [...new Set(preguntas.map(p => p.bloque))];
+      bloquesUnicos.forEach(bloque => {
+        const btn = document.createElement('button');
+        btn.textContent = `Bloque ${bloque}`;
+        btn.onclick = () => comenzarBloque(bloque);
+        bloquesContainer.appendChild(btn);
       });
     }
-  });
-</script>
+
+    function comenzarBloque(bloque) {
+      preguntasDelBloque = preguntas.filter(p => p.bloque === bloque);
+      preguntaActual = 0;
+      respuestas = [];
+      bloquesContainer.classList.add('hidden');
+      quizContainer.classList.remove('hidden');
+      mostrarPregunta();
+    }
+
+    function mostrarPregunta() {
+      seleccionLibro = null;
+      seleccionCapitulo = null;
+      siguienteBtn.classList.add('hidden');
+
+      const p = preguntasDelBloque[preguntaActual];
+      preguntaDiv.textContent = p.cita;
+
+      // Mostrar opciones de libro
+      libroOpciones.innerHTML = '';
+      [p.opcion_1, p.opcion_2, p.opcion_3, p.opcion_4].forEach(libro => {
+        const btn = document.createElement('button');
+        btn.textContent = libro;
+        btn.onclick = () => {
+          seleccionLibro = libro;
+          [...libroOpciones.children].forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          verificarSeleccion();
+        };
+        libroOpciones.appendChild(btn);
+      });
+
+      // Mostrar opciones de capítulo
+      capituloOpciones.innerHTML = '';
+      [p.opcion_cap_1, p.opcion_cap_2, p.opcion_cap_3, p.opcion_cap_4].forEach(cap => {
+        const btn = document.createElement('button');
+        btn.textContent = cap;
+        btn.onclick = () => {
+          seleccionCapitulo = cap;
+          [...capituloOpciones.children].forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          verificarSeleccion();
+        };
+        capituloOpciones.appendChild(btn);
+      });
+    }
+
+    function verificarSeleccion() {
+      if (seleccionLibro && seleccionCapitulo) {
+        siguienteBtn.classList.remove('hidden');
+      }
+    }
+
+    siguienteBtn.onclick = () => {
+      const p = preguntasDelBloque[preguntaActual];
+      const correctaLibro = seleccionLibro === p.libro;
+      const correctoCapitulo = parseInt(seleccionCapitulo) === p.capitulo;
+
+      respuestas.push({ correctaLibro, correctoCapitulo });
+
+      preguntaActual++;
+      if (preguntaActual < preguntasDelBloque.length) {
+        mostrarPregunta();
+      } else {
+        mostrarResultado();
+      }
+    };
+
+    function mostrarResultado() {
+      quizContainer.classList.add('hidden');
+      resultadoDiv.classList.remove('hidden');
+
+      const total = respuestas.length;
+      const correctosLibro = respuestas.filter(r => r.correctaLibro).length;
+      const correctosCap = respuestas.filter(r => r.correctoCapitulo).length;
+
+      resultadoDiv.innerHTML = `
+        <h2>Resultados</h2>
+        <p><strong>Libros correctos:</strong> ${correctosLibro} de ${total}</p>
+        <p><strong>Capítulos correctos:</strong> ${correctosCap} de ${total}</p>
+        <button onclick="location.reload()">Volver a elegir bloque</button>
+      `;
+    }
+
+    mostrarBloques();
+  </script>
 
 </body>
 </html>
