@@ -1,337 +1,52 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Quiz Bíblico - Bloques</title>
-<style>
-  /* Paleta dorado y negro elegante */
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #121212;
-    color: #f0d98b; /* dorado claro */
-    margin: 0; padding: 20px;
-    display: flex; flex-direction: column; align-items: center;
-  }
-  h1, h2 {
-    color: #f9d870;
-  }
-  button {
-    background-color: #3c2f00;
-    border: 2px solid #f0d98b;
-    color: #f0d98b;
-    padding: 10px 20px;
-    margin: 10px 5px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: background-color 0.3s;
-  }
-  button:hover {
-    background-color: #f0d98b;
-    color: #3c2f00;
-  }
-  select {
-    background-color: #121212;
-    color: #f0d98b;
-    border: 2px solid #f0d98b;
-    font-size: 1.1rem;
-    padding: 8px 12px;
-    border-radius: 6px;
-    margin: 10px 0;
-  }
-  .hidden {
-    display: none;
-  }
-  .quiz-container {
-    max-width: 600px;
-    width: 100%;
-    background-color: #1e1e1e;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px #f0d98baa;
-  }
-  .options-group {
-    margin: 15px 0;
-  }
-  label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: bold;
-  }
-  .option-item {
-    margin-bottom: 10px;
-  }
-  .result-message {
-    font-size: 1.3rem;
-    font-weight: bold;
-    margin-top: 15px;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz Bíblico - Citas</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-<h1>Quiz Bíblico por Bloques</h1>
-
-<!-- Selección de bloque -->
-<div id="start-screen">
-  <label for="bloque-select">Elige un bloque:</label>
-  <select id="bloque-select"></select>
-  <button id="btn-start">Comenzar</button>
-</div>
-
-<!-- Contenedor preguntas -->
-<div id="quiz-screen" class="quiz-container hidden">
-  <h2 id="cita-text">Cita bíblica</h2>
-
-  <div class="options-group" id="group-libro">
-    <label>Selecciona el libro:</label>
-    <div id="options-libro"></div>
+  <div id="inicio">
+    <h1>Selecciona un bloque</h1>
+    <select id="selectBloque">
+      <option value="">-- Elige un bloque --</option>
+      <option value="1">Bloque 1</option>
+      <option value="2">Bloque 2</option>
+      <option value="3">Bloque 3</option>
+    </select>
+    <button id="btnComenzar" disabled>Comenzar</button>
   </div>
 
-  <div class="options-group" id="group-capitulo">
-    <label>Selecciona el capítulo:</label>
-    <div id="options-capitulo"></div>
+  <div id="quiz" class="oculto">
+    <div id="pregunta">
+      <p id="textoCita"></p>
+    </div>
+    <div id="respuestas">
+      <div>
+        <p><strong>Libro:</strong></p>
+        <div id="opcionesLibro"></div>
+      </div>
+      <div>
+        <p><strong>Capítulo:</strong></p>
+        <div id="opcionesCapitulo"></div>
+      </div>
+    </div>
+    <button id="btnSiguiente" disabled>Siguiente</button>
   </div>
 
-  <button id="btn-next" disabled>Siguiente</button>
-</div>
+  <div id="resultado" class="oculto">
+    <h2>Resultados</h2>
+    <p id="porcentaje"></p>
+    <p id="mensaje"></p>
+    <button id="btnReiniciar">Reiniciar bloque</button>
+    <button id="btnVolver">Volver al inicio</button>
+  </div>
 
-<!-- Pantalla final -->
-<div id="result-screen" class="quiz-container hidden">
-  <h2>Resultados</h2>
-  <p id="score-text"></p>
-  <p id="performance-message" class="result-message"></p>
-  <button id="btn-restart">Reiniciar bloque</button>
-  <button id="btn-back">Volver al inicio</button>
-</div>
+  <audio id="audioCorrecto" src="sonidos/correcto.mp3"></audio>
+  <audio id="audioIncorrecto" src="sonidos/incorrecto.mp3"></audio>
 
-<script>
-  // Variables globales
-  let datos = [];
-  let bloqueActual = null;
-  let preguntasBloque = [];
-  let preguntaIndex = 0;
-
-  let respuestasUsuario = [];
-
-  // Sonidos (asume que tienes estos archivos en la carpeta sonidos/)
-  const sonidoInicio = new Audio('sonidos/start.mp3');
-  const sonidoCorrecto = new Audio('sonidos/correct.mp3');
-  const sonidoIncorrecto = new Audio('sonidos/wrong.mp3');
-  const sonidoFin = new Audio('sonidos/end.mp3');
-
-  // Elementos DOM
-  const startScreen = document.getElementById('start-screen');
-  const bloqueSelect = document.getElementById('bloque-select');
-  const btnStart = document.getElementById('btn-start');
-
-  const quizScreen = document.getElementById('quiz-screen');
-  const citaText = document.getElementById('cita-text');
-  const optionsLibroDiv = document.getElementById('options-libro');
-  const optionsCapituloDiv = document.getElementById('options-capitulo');
-  const btnNext = document.getElementById('btn-next');
-
-  const resultScreen = document.getElementById('result-screen');
-  const scoreText = document.getElementById('score-text');
-  const performanceMessage = document.getElementById('performance-message');
-  const btnRestart = document.getElementById('btn-restart');
-  const btnBack = document.getElementById('btn-back');
-
-  // Cargar JSON
-  async function cargarDatos() {
-    try {
-      const resp = await fetch('datos.json');
-      datos = await resp.json();
-      cargarBloquesEnSelect();
-    } catch (error) {
-      alert('Error cargando datos: ' + error);
-    }
-  }
-
-  // Cargar bloques únicos en el select
-  function cargarBloquesEnSelect() {
-    const bloquesUnicos = [...new Set(datos.map(d => d.bloque))].sort((a,b) => a - b);
-    bloqueSelect.innerHTML = '';
-    bloquesUnicos.forEach(b => {
-      const option = document.createElement('option');
-      option.value = b;
-      option.textContent = `Bloque ${b}`;
-      bloqueSelect.appendChild(option);
-    });
-  }
-
-  // Iniciar quiz en bloque seleccionado
-  function iniciarQuiz() {
-    bloqueActual = parseInt(bloqueSelect.value);
-    preguntasBloque = datos.filter(p => p.bloque === bloqueActual);
-    preguntaIndex = 0;
-    respuestasUsuario = [];
-
-    startScreen.classList.add('hidden');
-    resultScreen.classList.add('hidden');
-    quizScreen.classList.remove('hidden');
-
-    sonidoInicio.play();
-
-    mostrarPregunta();
-  }
-
-  // Mostrar pregunta actual
-  function mostrarPregunta() {
-    btnNext.disabled = true;
-
-    const pregunta = preguntasBloque[preguntaIndex];
-    citaText.textContent = `"${pregunta.cita}"`;
-
-    // Mostrar opciones libro
-    optionsLibroDiv.innerHTML = '';
-    pregunta.opciones_libro.forEach((libro, i) => {
-      const id = `libro_${i}`;
-      const radio = document.createElement('input');
-      radio.type = 'radio';
-      radio.name = 'libro';
-      radio.id = id;
-      radio.value = libro;
-      radio.addEventListener('change', habilitarBtnSiguiente);
-      const label = document.createElement('label');
-      label.htmlFor = id;
-      label.textContent = libro;
-      const div = document.createElement('div');
-      div.className = 'option-item';
-      div.appendChild(radio);
-      div.appendChild(label);
-      optionsLibroDiv.appendChild(div);
-    });
-
-    // Mostrar opciones capítulo
-    optionsCapituloDiv.innerHTML = '';
-    const capOptions = pregunta.opciones_capitulo;
-    capOptions.forEach((cap, i) => {
-      const id = `capitulo_${i}`;
-      const radio = document.createElement('input');
-      radio.type = 'radio';
-      radio.name = 'capitulo';
-      radio.id = id;
-      radio.value = cap;
-      radio.addEventListener('change', habilitarBtnSiguiente);
-      const label = document.createElement('label');
-      label.htmlFor = id;
-      label.textContent = cap;
-      const div = document.createElement('div');
-      div.className = 'option-item';
-      div.appendChild(radio);
-      div.appendChild(label);
-      optionsCapituloDiv.appendChild(div);
-    });
-  }
-
-  // Habilitar botón siguiente solo si ambas respuestas están seleccionadas
-  function habilitarBtnSiguiente() {
-    const libroSel = document.querySelector('input[name="libro"]:checked');
-    const capituloSel = document.querySelector('input[name="capitulo"]:checked');
-    btnNext.disabled = !(libroSel && capituloSel);
-  }
-
-  // Manejar click en botón siguiente
-  function siguientePregunta() {
-    // Guardar respuesta
-    const libroSel = document.querySelector('input[name="libro"]:checked').value;
-    const capituloSel = parseInt(document.querySelector('input[name="capitulo"]:checked').value);
-
-    respuestasUsuario.push({libro: libroSel, capitulo: capituloSel});
-
-    // Revisar si correcto
-    const pregunta = preguntasBloque[preguntaIndex];
-    const esLibroCorrecto = libroSel === pregunta.libro;
-    const esCapituloCorrecto = capituloSel === pregunta.capitulo;
-
-    if (esLibroCorrecto && esCapituloCorrecto) {
-      sonidoCorrecto.play();
-    } else {
-      sonidoIncorrecto.play();
-    }
-
-    preguntaIndex++;
-
-    if (preguntaIndex >= preguntasBloque.length) {
-      mostrarResultados();
-    } else {
-      mostrarPregunta();
-    }
-  }
-
-  // Mostrar resultados al final
-  function mostrarResultados() {
-    quizScreen.classList.add('hidden');
-    resultScreen.classList.remove('hidden');
-
-    // Calcular aciertos
-    let correctLibros = 0;
-    let correctCapitulos = 0;
-    preguntasBloque.forEach((p, i) => {
-      if (respuestasUsuario[i].libro === p.libro) correctLibros++;
-      if (respuestasUsuario[i].capitulo === p.capitulo) correctCapitulos++;
-    });
-
-    const total = preguntasBloque.length;
-    const porcLibro = Math.round((correctLibros / total) * 100);
-    const porcCapitulo = Math.round((correctCapitulos / total) * 100);
-    const promedio = Math.round((porcLibro + porcCapitulo) / 2);
-
-    scoreText.innerHTML = `
-      Porcentaje de respuestas correctas:<br>
-      Libro: ${porcLibro}%<br>
-      Capítulo: ${porcCapitulo}%<br>
-      Promedio general: ${promedio}%
-    `;
-
-    // Mensaje personalizado según desempeño promedio
-    let msg = '';
-    if (promedio >= 90) {
-      msg = '¡Excelente! Conoces muy bien las citas bíblicas.';
-    } else if (promedio >= 70) {
-      msg = 'Buen trabajo, pero puedes mejorar un poco más.';
-    } else if (promedio >= 50) {
-      msg = 'Está bien, pero te recomiendo estudiar más.';
-    } else {
-      msg = 'Necesitas repasar las citas bíblicas con más atención.';
-    }
-    performanceMessage.textContent = msg;
-
-    sonidoFin.play();
-  }
-
-  // Reiniciar bloque actual
-  function reiniciarBloque() {
-    preguntaIndex = 0;
-    respuestasUsuario = [];
-    resultScreen.classList.add('hidden');
-    quizScreen.classList.remove('hidden');
-    mostrarPregunta();
-  }
-
-  // Volver a la pantalla inicial
-  function volverInicio() {
-    bloqueActual = null;
-    preguntasBloque = [];
-    preguntaIndex = 0;
-    respuestasUsuario = [];
-    resultScreen.classList.add('hidden');
-    quizScreen.classList.add('hidden');
-    startScreen.classList.remove('hidden');
-  }
-
-  // Eventos
-  btnStart.addEventListener('click', iniciarQuiz);
-  btnNext.addEventListener('click', siguientePregunta);
-  btnRestart.addEventListener('click', reiniciarBloque);
-  btnBack.addEventListener('click', volverInicio);
-
-  // Cargar datos al inicio
-  cargarDatos();
-
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>
+
