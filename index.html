@@ -3,31 +3,187 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Quiz por Bloque</title>
-  <link rel="stylesheet" href="estilos.css" />
+  <title>Quiz Bíblico por Bloques</title>
   <style>
-    #quiz, #mensaje-final { display: none; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff7e6;
+      color: #5a3e1b;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 650px;
+      margin: 0 auto;
+      background-color: #f9f3e7;
+      border: 2px solid #d2b48c;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+      color: #a05a0a;
+    }
+
+    .menu-bloques {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #pregunta {
+      font-size: 1.2rem;
+      font-style: italic;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .opciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    button.opcion {
+      background-color: #d2b48c;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      color: #5a3e1b;
+      font-weight: bold;
+      transition: background-color 0.3s;
+      flex: 1 1 40%;
+      min-width: 120px;
+    }
+
+    button.opcion:hover {
+      background-color: #a05a0a;
+      color: white;
+    }
+
+    #mensaje-final {
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 500px) {
+      button.opcion {
+        flex: 1 1 100%;
+      }
+    }
   </style>
 </head>
 <body>
-
   <div class="container">
-    <h1>Selecciona un Bloque</h1>
-
+    <h2>Selecciona un Bloque</h2>
     <div class="menu-bloques">
       <select id="selector-bloques"></select>
       <button id="btn-comenzar">Comenzar</button>
     </div>
 
-    <div id="quiz">
-      <div id="progreso"></div>
-      <div id="cita"></div>
-      <div class="botones-opcion" id="opciones"></div>
+    <div id="quiz" style="display: none;">
+      <div id="pregunta"></div>
+      <div class="opciones" id="opciones"></div>
     </div>
 
-    <div id="mensaje-final" class="resultado"></div>
+    <div id="mensaje-final" style="display: none;"></div>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    let datosQuiz = [];
+    let preguntas = [];
+    let indice = 0;
+    let pasoLibro = true;
+
+    async function cargarDatos() {
+      try {
+        const res = await fetch('citas.json');
+        datosQuiz = await res.json();
+        const bloques = [...new Set(datosQuiz.map(p => p.bloque))];
+        const selector = document.getElementById('selector-bloques');
+        selector.innerHTML = '<option value="">-- Elige un bloque --</option>';
+        bloques.forEach(b => {
+          const option = document.createElement('option');
+          option.value = b;
+          option.textContent = `Bloque ${b}`;
+          selector.appendChild(option);
+        });
+      } catch (err) {
+        alert("Error cargando citas.json");
+      }
+    }
+
+    function mezclar(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function mostrarPregunta() {
+      const quiz = document.getElementById('quiz');
+      const contenedor = document.getElementById('opciones');
+      const cita = preguntas[indice];
+      contenedor.innerHTML = "";
+      document.getElementById('pregunta').textContent = `"${cita.cita}"`;
+
+      const opciones = pasoLibro ? mezclar(cita.opciones_libro) : mezclar(cita.opciones_capitulo.map(c => String(c)));
+
+      opciones.forEach(opcion => {
+        const btn = document.createElement('button');
+        btn.className = 'opcion';
+        btn.textContent = opcion;
+        btn.onclick = () => evaluarRespuesta(opcion);
+        contenedor.appendChild(btn);
+      });
+
+      quiz.style.display = 'block';
+    }
+
+    function evaluarRespuesta(opcion) {
+      const actual = preguntas[indice];
+      if (pasoLibro) {
+        if (opcion === actual.libro) {
+          alert("✅ Libro correcto. Ahora el capítulo.");
+        } else {
+          alert(`❌ Era: ${actual.libro}. Ahora el capítulo.`);
+        }
+        pasoLibro = false;
+        mostrarPregunta();
+      } else {
+        if (parseInt(opcion) === actual.capitulo) {
+          alert("✅ Capítulo correcto. Siguiente cita.");
+        } else {
+          alert(`❌ Era: ${actual.capitulo}. Siguiente cita.`);
+        }
+        indice++;
+        pasoLibro = true;
+        if (indice < preguntas.length) {
+          mostrarPregunta();
+        } else {
+          document.getElementById('quiz').style.display = 'none';
+          document.getElementById('mensaje-final').style.display = 'block';
+          document.getElementById('mensaje-final').textContent = '¡Has completado todas las preguntas!';
+        }
+      }
+    }
+
+    function comenzarQuiz() {
+      const bloque = document.getElementById('selector-bloques').value;
+      if (!bloque) return alert("Selecciona un bloque primero");
+      preguntas = datosQuiz.filter(p => p.bloque == bloque);
+      indice = 0;
+      pasoLibro = true;
+      document.querySelector('.menu-bloques').style.display = 'none';
+      document.getElementById('mensaje-final').style.display = 'none';
+      mostrarPregunta();
+    }
+
+    document.getElementById('btn-comenzar').addEventListener('click', comenzarQuiz);
+    cargarDatos();
+  </script>
 </body>
 </html>
