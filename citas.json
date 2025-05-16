@@ -96,7 +96,7 @@
   },
   {
     "id": 6,
-    "bloque": 1,
+    "bloque": 2,
     "cita": "Bienaventurados los pobres en espíritu...",
     "libro": "Mateo",
     "capitulo": 5,
@@ -115,7 +115,7 @@
   },
   {
     "id": 7,
-    "bloque": 1,
+    "bloque": 2,
     "cita": "Todo lo puedo en Cristo que me fortalece.",
     "libro": "Filipenses",
     "capitulo": 4,
@@ -134,7 +134,7 @@
   },
   {
     "id": 8,
-    "bloque": 1,
+    "bloque": 2,
     "cita": "El que habita al abrigo del Altísimo morará bajo la sombra del Omnipotente.",
     "libro": "Salmos",
     "capitulo": 91,
@@ -153,7 +153,7 @@
   },
   {
     "id": 9,
-    "bloque": 1,
+    "bloque": 2,
     "cita": "Porque donde están dos o tres congregados en mi nombre...",
     "libro": "Mateo",
     "capitulo": 18,
@@ -172,7 +172,7 @@
   },
   {
     "id": 10,
-    "bloque": 1,
+    "bloque": 2,
     "cita": "No os conforméis a este mundo, sino transformaos por la renovación de vuestra mente.",
     "libro": "Romanos",
     "capitulo": 12,
@@ -191,7 +191,7 @@
   },
   {
     "id": 11,
-    "bloque": 2,
+    "bloque": 3,
     "cita": "Amarás a tu prójimo como a ti mismo.",
     "libro": "Mateo",
     "capitulo": 22,
@@ -210,7 +210,7 @@
   },
   {
     "id": 12,
-    "bloque": 2,
+    "bloque": 3,
     "cita": "El que no ama no conoce a Dios, porque Dios es amor.",
     "libro": "1 Juan",
     "capitulo": 4,
@@ -229,7 +229,7 @@
   },
   {
     "id": 13,
-    "bloque": 2,
+    "bloque": 3,
     "cita": "Confía en el Señor con todo tu corazón.",
     "libro": "Proverbios",
     "capitulo": 3,
@@ -248,7 +248,7 @@
   },
   {
     "id": 14,
-    "bloque": 2,
+    "bloque": 3,
     "cita": "Todo tiene su tiempo, y todo lo que se quiere debajo del cielo su hora.",
     "libro": "Eclesiastés",
     "capitulo": 3,
@@ -267,7 +267,7 @@
   },
   {
     "id": 15,
-    "bloque": 2,
+    "bloque": 3,
     "cita": "El justo florecerá como la palmera.",
     "libro": "Salmos",
     "capitulo": 92,
@@ -286,7 +286,7 @@
   },
   {
     "id": 16,
-    "bloque": 2,
+    "bloque": 4,
     "cita": "La fe es la certeza de lo que se espera.",
     "libro": "Hebreos",
     "capitulo": 11,
@@ -305,7 +305,7 @@
   },
   {
     "id": 17,
-    "bloque": 2,
+    "bloque": 4,
     "cita": "Sed siempre humildes y amables.",
     "libro": "Efesios",
     "capitulo": 4,
@@ -324,7 +324,7 @@
   },
   {
     "id": 18,
-    "bloque": 2,
+    "bloque": 4,
     "cita": "No os hagáis tesoros en la tierra.",
     "libro": "Mateo",
     "capitulo": 6,
@@ -343,7 +343,7 @@
   },
   {
     "id": 19,
-    "bloque": 2,
+    "bloque": 4,
     "cita": "Honra a tu padre y a tu madre.",
     "libro": "Éxodo",
     "capitulo": 20,
@@ -362,7 +362,7 @@
   },
   {
     "id": 20,
-    "bloque": 2,
+    "bloque": 4,
     "cita": "El Señor es mi luz y mi salvación; ¿a quién temeré?",
     "libro": "Salmos",
     "capitulo": 27,
