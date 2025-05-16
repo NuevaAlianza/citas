@@ -1,8 +1,9 @@
 let datosQuiz = [];
 let preguntasFiltradas = [];
-
 let indicePregunta = 0;
-let preguntandoLibro = true; // true = preguntando libro, false = preguntando capítulo
+let preguntandoLibro = true;
+let aciertosLibro = 0;
+let aciertosCapitulo = 0;
 
 async function cargarDatos() {
   try {
@@ -25,7 +26,6 @@ async function cargarDatos() {
 }
 
 function mezclarArray(array) {
-  // Mezcla Fisher-Yates
   let copia = array.slice();
   for (let i = copia.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -36,65 +36,64 @@ function mezclarArray(array) {
 
 function mostrarPregunta() {
   if (indicePregunta >= preguntasFiltradas.length) {
-    // Fin del quiz
-    document.getElementById('quiz').style.display = 'none';
-    document.getElementById('mensaje-final').textContent = '¡Has terminado el bloque!';
-    document.getElementById('mensaje-final').style.display = 'block';
+    mostrarResultadoFinal();
     return;
   }
 
   const p = preguntasFiltradas[indicePregunta];
-  const contenedorPreguntas = document.getElementById('preguntas');
-  contenedorPreguntas.innerHTML = '';
+  document.getElementById('progreso').textContent = `Pregunta ${indicePregunta + 1} de ${preguntasFiltradas.length}`;
 
-  const preguntaTexto = document.createElement('p');
-  preguntaTexto.textContent = `Cita: "${p.cita}"`;
+  const contenedorCita = document.getElementById('cita');
+  contenedorCita.textContent = `"${p.cita}"`;
 
-  contenedorPreguntas.appendChild(preguntaTexto);
+  const contenedorOpciones = document.getElementById('opciones');
+  contenedorOpciones.innerHTML = '';
 
-  let opciones = [];
-  if (preguntandoLibro) {
-    opciones = mezclarArray(p.opciones_libro);
-  } else {
-    opciones = mezclarArray(p.opciones_capitulo);
-  }
-
+  let opciones = preguntandoLibro ? mezclarArray(p.opciones_libro) : mezclarArray(p.opciones_capitulo);
   opciones.forEach(opcion => {
     const btn = document.createElement('button');
     btn.textContent = opcion;
-    btn.style.margin = '5px';
-    btn.addEventListener('click', () => {
-      evaluarRespuesta(opcion);
-    });
-    contenedorPreguntas.appendChild(btn);
+    btn.addEventListener('click', () => evaluarRespuesta(opcion));
+    contenedorOpciones.appendChild(btn);
   });
 }
 
 function evaluarRespuesta(opcionElegida) {
   const p = preguntasFiltradas[indicePregunta];
-
   if (preguntandoLibro) {
     if (opcionElegida === p.libro) {
-      alert('Correcto! Ahora responde el capítulo.');
-      preguntandoLibro = false;
-      mostrarPregunta();
+      aciertosLibro++;
+      alert('✅ ¡Correcto! Ahora responde el capítulo.');
     } else {
-      alert(`Incorrecto. La respuesta correcta es: ${p.libro}. Intenta el capítulo ahora.`);
-      preguntandoLibro = false;
-      mostrarPregunta();
+      alert(`❌ Incorrecto. La respuesta correcta era: ${p.libro}. Ahora intenta con el capítulo.`);
     }
+    preguntandoLibro = false;
+    mostrarPregunta();
   } else {
-    // Preguntando capítulo
     if (parseInt(opcionElegida) === p.capitulo) {
-      alert('Correcto! Pasamos a la siguiente cita.');
+      aciertosCapitulo++;
+      alert('✅ ¡Correcto! Pasamos a la siguiente cita.');
     } else {
-      alert(`Incorrecto. La respuesta correcta es: ${p.capitulo}. Pasamos a la siguiente cita.`);
+      alert(`❌ Incorrecto. La respuesta correcta era: ${p.capitulo}.`);
     }
-    // Avanzamos a la siguiente pregunta
     indicePregunta++;
     preguntandoLibro = true;
     mostrarPregunta();
   }
+}
+
+function mostrarResultadoFinal() {
+  document.getElementById('quiz').style.display = 'none';
+  const total = preguntasFiltradas.length;
+  const mensaje = `
+    <h2>¡Has terminado el bloque!</h2>
+    <p>✅ Aciertos en LIBROS: ${aciertosLibro} / ${total}</p>
+    <p>✅ Aciertos en CAPÍTULOS: ${aciertosCapitulo} / ${total}</p>
+    <button onclick="reiniciar()">Reiniciar</button>
+  `;
+  const contenedorFinal = document.getElementById('mensaje-final');
+  contenedorFinal.innerHTML = mensaje;
+  contenedorFinal.style.display = 'block';
 }
 
 function comenzarQuiz() {
@@ -107,16 +106,24 @@ function comenzarQuiz() {
 
   preguntasFiltradas = datosQuiz.filter(p => p.bloque == bloqueElegido);
 
-  selector.style.display = 'none';
-  document.getElementById('btn-comenzar').style.display = 'none';
-
   indicePregunta = 0;
+  aciertosLibro = 0;
+  aciertosCapitulo = 0;
   preguntandoLibro = true;
 
+  selector.style.display = 'none';
+  document.getElementById('btn-comenzar').style.display = 'none';
   document.getElementById('mensaje-final').style.display = 'none';
   document.getElementById('quiz').style.display = 'block';
 
   mostrarPregunta();
+}
+
+function reiniciar() {
+  document.getElementById('selector-bloques').style.display = 'inline';
+  document.getElementById('btn-comenzar').style.display = 'inline';
+  document.getElementById('mensaje-final').style.display = 'none';
+  document.getElementById('quiz').style.display = 'none';
 }
 
 document.getElementById('btn-comenzar').addEventListener('click', comenzarQuiz);
