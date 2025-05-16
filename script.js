@@ -1,169 +1,124 @@
-let datos = [];
-let preguntas = [];
-let bloqueActual = null;
+let datosQuiz = [];
+let preguntasFiltradas = [];
+
 let indicePregunta = 0;
+let preguntandoLibro = true; // true = preguntando libro, false = preguntando capítulo
 
-let seleccionLibro = null;
-let seleccionCapitulo = null;
+async function cargarDatos() {
+  try {
+    const response = await fetch('citas.json');
+    if (!response.ok) throw new Error('No se pudo cargar citas.json');
+    datosQuiz = await response.json();
 
-let aciertosLibro = 0;
-let aciertosCapitulo = 0;
-
-const selectBloque = document.getElementById('select-bloque');
-const btnIniciar = document.getElementById('btn-iniciar');
-const quizDiv = document.getElementById('quiz');
-const citaElem = document.getElementById('cita');
-const opcionesLibroDiv = document.getElementById('opciones-libro');
-const opcionesCapituloDiv = document.getElementById('opciones-capitulo');
-const btnConfirmar = document.getElementById('btn-confirmar');
-const feedback = document.getElementById('feedback');
-const progreso = document.getElementById('progreso');
-const resultadoDiv = document.getElementById('resultado');
-const mensajeFinal = document.getElementById('mensaje-final');
-const btnReiniciar = document.getElementById('btn-reiniciar');
-const btnCambiarBloque = document.getElementById('btn-cambiar-bloque');
-const menuBloques = document.getElementById('menu-bloques');
-
-function cargarDatos() {
-  fetch('citas.json')
-    .then(response => {
-      if (!response.ok) throw new Error("Error al cargar citas.json");
-      return response.json();
-    })
-    .then(data => {
-      datos = data;
-      llenarSelectorBloques();
-    })
-    .catch(err => {
-      alert("No se pudieron cargar las citas.");
-      console.error(err);
+    const bloquesUnicos = [...new Set(datosQuiz.map(q => q.bloque))];
+    const selector = document.getElementById('selector-bloques');
+    selector.innerHTML = '<option value="">-- Elige un bloque --</option>';
+    bloquesUnicos.forEach(b => {
+      const option = document.createElement('option');
+      option.value = b;
+      option.textContent = `Bloque ${b}`;
+      selector.appendChild(option);
     });
+  } catch (error) {
+    alert('Error cargando datos: ' + error.message);
+  }
 }
 
-function llenarSelectorBloques() {
-  const bloques = [...new Set(datos.map(d => d.bloque))];
-  selectBloque.innerHTML = '';
-  bloques.forEach(b => {
-    const option = document.createElement('option');
-    option.value = b;
-    option.textContent = `Bloque ${b}`;
-    selectBloque.appendChild(option);
+function mezclarArray(array) {
+  // Mezcla Fisher-Yates
+  let copia = array.slice();
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia;
+}
+
+function mostrarPregunta() {
+  if (indicePregunta >= preguntasFiltradas.length) {
+    // Fin del quiz
+    document.getElementById('quiz').style.display = 'none';
+    document.getElementById('mensaje-final').textContent = '¡Has terminado el bloque!';
+    document.getElementById('mensaje-final').style.display = 'block';
+    return;
+  }
+
+  const p = preguntasFiltradas[indicePregunta];
+  const contenedorPreguntas = document.getElementById('preguntas');
+  contenedorPreguntas.innerHTML = '';
+
+  const preguntaTexto = document.createElement('p');
+  preguntaTexto.textContent = `Cita: "${p.cita}"`;
+
+  contenedorPreguntas.appendChild(preguntaTexto);
+
+  let opciones = [];
+  if (preguntandoLibro) {
+    opciones = mezclarArray(p.opciones_libro);
+  } else {
+    opciones = mezclarArray(p.opciones_capitulo);
+  }
+
+  opciones.forEach(opcion => {
+    const btn = document.createElement('button');
+    btn.textContent = opcion;
+    btn.style.margin = '5px';
+    btn.addEventListener('click', () => {
+      evaluarRespuesta(opcion);
+    });
+    contenedorPreguntas.appendChild(btn);
   });
 }
 
-function iniciarQuiz() {
-  bloqueActual = parseInt(selectBloque.value);
-  preguntas = datos.filter(p => p.bloque === bloqueActual);
-  indicePregunta = 0;
-  aciertosLibro = 0;
-  aciertosCapitulo = 0;
+function evaluarRespuesta(opcionElegida) {
+  const p = preguntasFiltradas[indicePregunta];
 
-  menuBloques.style.display = 'none';
-  resultadoDiv.style.display = 'none';
-  quizDiv.style.display = 'block';
+  if (preguntandoLibro) {
+    if (opcionElegida === p.libro) {
+      alert('Correcto! Ahora responde el capítulo.');
+      preguntandoLibro = false;
+      mostrarPregunta();
+    } else {
+      alert(`Incorrecto. La respuesta correcta es: ${p.libro}. Intenta el capítulo ahora.`);
+      preguntandoLibro = false;
+      mostrarPregunta();
+    }
+  } else {
+    // Preguntando capítulo
+    if (parseInt(opcionElegida) === p.capitulo) {
+      alert('Correcto! Pasamos a la siguiente cita.');
+    } else {
+      alert(`Incorrecto. La respuesta correcta es: ${p.capitulo}. Pasamos a la siguiente cita.`);
+    }
+    // Avanzamos a la siguiente pregunta
+    indicePregunta++;
+    preguntandoLibro = true;
+    mostrarPregunta();
+  }
+}
+
+function comenzarQuiz() {
+  const selector = document.getElementById('selector-bloques');
+  const bloqueElegido = selector.value;
+  if (!bloqueElegido) {
+    alert('Por favor selecciona un bloque');
+    return;
+  }
+
+  preguntasFiltradas = datosQuiz.filter(p => p.bloque == bloqueElegido);
+
+  selector.style.display = 'none';
+  document.getElementById('btn-comenzar').style.display = 'none';
+
+  indicePregunta = 0;
+  preguntandoLibro = true;
+
+  document.getElementById('mensaje-final').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
 
   mostrarPregunta();
 }
 
-function mostrarPregunta() {
-  seleccionLibro = null;
-  seleccionCapitulo = null;
-  btnConfirmar.disabled = true;
-  feedback.textContent = '';
-  progreso.textContent = `Pregunta ${indicePregunta + 1} de ${preguntas.length}`;
+document.getElementById('btn-comenzar').addEventListener('click', comenzarQuiz);
 
-  const p = preguntas[indicePregunta];
-  citaElem.textContent = `"${p.cita}"`;
-
-  // Mostrar opciones libro
-  opcionesLibroDiv.innerHTML = '';
-  p.opciones_libro.forEach((libro, i) => {
-    const btn = document.createElement('button');
-    btn.textContent = libro;
-    btn.addEventListener('click', () => {
-      seleccionLibro = libro;
-      marcarSeleccion(opcionesLibroDiv, btn);
-      habilitarConfirmar();
-    });
-    opcionesLibroDiv.appendChild(btn);
-  });
-
-  // Mostrar opciones capítulo
-  opcionesCapituloDiv.innerHTML = '';
-  p.opciones_capitulo.forEach((cap, i) => {
-    const btn = document.createElement('button');
-    btn.textContent = cap;
-    btn.addEventListener('click', () => {
-      seleccionCapitulo = cap;
-      marcarSeleccion(opcionesCapituloDiv, btn);
-      habilitarConfirmar();
-    });
-    opcionesCapituloDiv.appendChild(btn);
-  });
-}
-
-function marcarSeleccion(contenedor, btnSeleccionado) {
-  [...contenedor.children].forEach(btn => {
-    btn.classList.remove('selected');
-  });
-  btnSeleccionado.classList.add('selected');
-}
-
-function habilitarConfirmar() {
-  btnConfirmar.disabled = !(seleccionLibro && seleccionCapitulo);
-}
-
-btnConfirmar.addEventListener('click', () => {
-  const p = preguntas[indicePregunta];
-  let correctoLibro = seleccionLibro === p.libro;
-  let correctoCapitulo = seleccionCapitulo === p.capitulo;
-
-  if (correctoLibro) aciertosLibro++;
-  if (correctoCapitulo) aciertosCapitulo++;
-
-  if (correctoLibro && correctoCapitulo) {
-    feedback.textContent = '¡Correcto!';
-    feedback.style.color = 'green';
-  } else {
-    feedback.textContent = `Incorrecto. Libro: ${p.libro}, Capítulo: ${p.capitulo}`;
-    feedback.style.color = 'red';
-  }
-
-  btnConfirmar.disabled = true;
-
-  // Pasar a la siguiente pregunta después de 1.5 segundos
-  setTimeout(() => {
-    indicePregunta++;
-    if (indicePregunta < preguntas.length) {
-      mostrarPregunta();
-    } else {
-      mostrarResultado();
-    }
-  }, 1500);
-});
-
-function mostrarResultado() {
-  quizDiv.style.display = 'none';
-  resultadoDiv.style.display = 'block';
-
-  const total = preguntas.length;
-  const porcentajeLibro = Math.round((aciertosLibro / total) * 100);
-  const porcentajeCapitulo = Math.round((aciertosCapitulo / total) * 100);
-
-  mensajeFinal.innerHTML = `
-    Aciertos en libro: ${aciertosLibro} de ${total} (${porcentajeLibro}%)<br/>
-    Aciertos en capítulo: ${aciertosCapitulo} de ${total} (${porcentajeCapitulo}%)
-  `;
-}
-
-btnReiniciar.addEventListener('click', () => {
-  iniciarQuiz();
-});
-
-btnCambiarBloque.addEventListener('click', () => {
-  resultadoDiv.style.display = 'none';
-  menuBloques.style.display = 'block';
-});
-
-// Inicio carga datos al cargar la página
 cargarDatos();
