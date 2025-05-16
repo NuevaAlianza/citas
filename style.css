@@ -17,12 +17,14 @@ button {
   background-color: #d4af37;
   border: none;
   color: #121212;
-  padding: 10px 20px;
+  padding: 12px 24px;
   margin-top: 20px;
   font-weight: bold;
   cursor: pointer;
   border-radius: 6px;
   transition: background-color 0.3s ease;
+  font-size: 1.1rem;
+  user-select: none;
 }
 
 button:disabled {
@@ -44,6 +46,7 @@ button:hover:not(:disabled) {
   width: 100%;
   max-width: 700px;
   margin-top: 15px;
+  gap: 10px;
 }
 
 #opcionesLibro button,
@@ -51,28 +54,23 @@ button:hover:not(:disabled) {
   background-color: #2a2a2a;
   border: 2px solid #d4af37;
   color: #d4af37;
-  padding: 8px 12px;
+  padding: 12px 16px;
   margin: 4px;
   border-radius: 4px;
   cursor: pointer;
   min-width: 90px;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-#opcionesLibro button:hover,
-#opcionesCapitulo button:hover {
-  background-color: #d4af37;
-  color: #121212;
+  font-size: 1rem;
+  user-select: none;
 }
 
 #opcionesLibro button.seleccionado,
 #opcionesCapitulo button.seleccionado {
-  background-color: #f5d442;
-  color: #121212;
-  border-color: #f5d442;
+  /* no cambia color al seleccionar para dar feedback solo al elegir */
 }
 
-#opcionesLibro button.correcto {
+#opcionesLibro button.correcto,
+#opcionesCapitulo button.correcto {
   background-color: #4caf50;
   color: white;
   border-color: #4caf50;
@@ -85,8 +83,22 @@ button:hover:not(:disabled) {
   border-color: #e53935;
 }
 
-#opcionesCapitulo button.correcto {
-  background-color: #4caf50;
-  color: white;
-  border-color: #4caf50;
+/* Responsive */
+
+@media (max-width: 600px) {
+  #respuestas {
+    flex-direction: column;
+    align-items: center;
+  }
+  #opcionesLibro button,
+  #opcionesCapitulo button {
+    width: 90vw;
+    max-width: 300px;
+    font-size: 1.2rem;
+  }
+  button {
+    width: 90vw;
+    max-width: 300px;
+    font-size: 1.2rem;
+  }
 }
