@@ -72,6 +72,21 @@
       margin-top: 20px;
     }
 
+    #btn-volver-inicio {
+      margin-top: 15px;
+      background-color: #a05a0a;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #btn-volver-inicio:hover {
+      background-color: #5a3e1b;
+    }
+
     @media (max-width: 500px) {
       button.opcion {
         flex: 1 1 100%;
@@ -100,6 +115,10 @@
     let preguntas = [];
     let indice = 0;
     let pasoLibro = true;
+
+    // Contadores de aciertos
+    let aciertosLibro = 0;
+    let aciertosCapitulo = 0;
 
     async function cargarDatos() {
       try {
@@ -130,7 +149,9 @@
       contenedor.innerHTML = "";
       document.getElementById('pregunta').textContent = `"${cita.cita}"`;
 
-      const opciones = pasoLibro ? mezclar(cita.opciones_libro) : mezclar(cita.opciones_capitulo.map(c => String(c)));
+      const opciones = pasoLibro
+        ? mezclar(cita.opciones_libro)
+        : mezclar(cita.opciones_capitulo.map(c => String(c)));
 
       opciones.forEach(opcion => {
         const btn = document.createElement('button');
@@ -147,6 +168,7 @@
       const actual = preguntas[indice];
       if (pasoLibro) {
         if (opcion === actual.libro) {
+          aciertosLibro++;
           alert("✅ Libro correcto. Ahora el capítulo.");
         } else {
           alert(`❌ Era: ${actual.libro}. Ahora el capítulo.`);
@@ -155,6 +177,7 @@
         mostrarPregunta();
       } else {
         if (parseInt(opcion) === actual.capitulo) {
+          aciertosCapitulo++;
           alert("✅ Capítulo correcto. Siguiente cita.");
         } else {
           alert(`❌ Era: ${actual.capitulo}. Siguiente cita.`);
@@ -164,11 +187,45 @@
         if (indice < preguntas.length) {
           mostrarPregunta();
         } else {
-          document.getElementById('quiz').style.display = 'none';
-          document.getElementById('mensaje-final').style.display = 'block';
-          document.getElementById('mensaje-final').textContent = '¡Has completado todas las preguntas!';
+          mostrarResultadoFinal();
         }
       }
+    }
+
+    function mostrarResultadoFinal() {
+      document.getElementById('quiz').style.display = 'none';
+
+      const total = preguntas.length;
+      const porcentajeLibros = Math.round((aciertosLibro / total) * 100);
+      const porcentajeCapitulos = Math.round((aciertosCapitulo / total) * 100);
+      const promedio = Math.round((porcentajeLibros + porcentajeCapitulos) / 2);
+
+      let mensajeNivel = '';
+      if (promedio >= 90) {
+        mensajeNivel = '¡Excelente! Eres un experto en las citas bíblicas.';
+      } else if (promedio >= 70) {
+        mensajeNivel = 'Muy bien, tienes buen conocimiento, pero puedes mejorar.';
+      } else if (promedio >= 50) {
+        mensajeNivel = 'Está bien, pero te recomiendo seguir practicando.';
+      } else {
+        mensajeNivel = 'Necesitas estudiar más para mejorar tus respuestas.';
+      }
+
+      const contenedorFinal = document.getElementById('mensaje-final');
+      contenedorFinal.innerHTML = `
+        <h2>¡Has terminado el bloque!</h2>
+        <p>✅ Aciertos en LIBROS: ${aciertosLibro} / ${total} (${porcentajeLibros}%)</p>
+        <p>✅ Aciertos en CAPÍTULOS: ${aciertosCapitulo} / ${total} (${porcentajeCapitulos}%)</p>
+        <p><strong>${mensajeNivel}</strong></p>
+        <button id="btn-volver-inicio">Volver al inicio</button>
+      `;
+      contenedorFinal.style.display = 'block';
+
+      // Mostrar el selector de bloques para volver a empezar
+      document.querySelector('.menu-bloques').style.display = 'block';
+
+      // Agregar evento para reiniciar
+      document.getElementById('btn-volver-inicio').addEventListener('click', reiniciar);
     }
 
     function comenzarQuiz() {
@@ -177,9 +234,25 @@
       preguntas = datosQuiz.filter(p => p.bloque == bloque);
       indice = 0;
       pasoLibro = true;
+      aciertosLibro = 0;
+      aciertosCapitulo = 0;
       document.querySelector('.menu-bloques').style.display = 'none';
       document.getElementById('mensaje-final').style.display = 'none';
       mostrarPregunta();
+    }
+
+    function reiniciar() {
+      indice = 0;
+      pasoLibro = true;
+      aciertosLibro = 0;
+      aciertosCapitulo = 0;
+      preguntas = [];
+      document.getElementById('mensaje-final').style.display = 'none';
+      document.getElementById('quiz').style.display = 'none';
+      document.querySelector('.menu-bloques').style.display = 'block';
+      document.getElementById('pregunta').textContent = '';
+      document.getElementById('opciones').innerHTML = '';
+      document.getElementById('selector-bloques').value = "";
     }
 
     document.getElementById('btn-comenzar').addEventListener('click', comenzarQuiz);
