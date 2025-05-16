@@ -3,93 +3,126 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Quiz Bíblico por Bloques</title>
+  <title>Quiz Bíblico Dorado</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #fff7e6;
-      color: #5a3e1b;
+      font-family: 'Georgia', serif;
+      background: linear-gradient(135deg, #f9f1d0, #b88e29);
+      color: #2b1f0e;
       margin: 0;
       padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .container {
+      background: #fff8dc;
+      border: 3px solid #b38b00;
+      border-radius: 15px;
+      padding: 25px 30px;
       max-width: 650px;
-      margin: 0 auto;
-      background-color: #f9f3e7;
-      border: 2px solid #d2b48c;
-      border-radius: 8px;
-      padding: 20px;
-    }
-
-    h1, h2, h3 {
+      width: 100%;
+      box-shadow: 0 0 20px #b38b00cc;
       text-align: center;
-      color: #a05a0a;
     }
 
-    .menu-bloques {
+    h2 {
+      color: #b38b00;
       margin-bottom: 20px;
-      text-align: center;
+      text-shadow: 1px 1px 2px #6d5500;
     }
 
     #pregunta {
-      font-size: 1.2rem;
       font-style: italic;
-      text-align: center;
+      font-size: 1.25rem;
       margin-bottom: 20px;
+      min-height: 72px;
+      color: #4a3c00;
+      text-shadow: 0 0 3px #b38b00bb;
     }
 
     .opciones {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
       justify-content: center;
-      margin-bottom: 20px;
+      gap: 15px;
+      margin-bottom: 25px;
     }
 
     button.opcion {
-      background-color: #d2b48c;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
+      background-color: #d7b740;
+      border: 2px solid #a68000;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
       cursor: pointer;
-      color: #5a3e1b;
-      font-weight: bold;
-      transition: background-color 0.3s;
+      color: #3c2f00;
+      transition: background-color 0.3s ease, color 0.3s ease;
       flex: 1 1 40%;
-      min-width: 120px;
+      min-width: 130px;
+      box-shadow: 0 4px 6px #a6800055;
+      user-select: none;
     }
 
     button.opcion:hover {
-      background-color: #a05a0a;
+      background-color: #a68000;
       color: white;
+      box-shadow: 0 4px 10px #a68000cc;
     }
 
     #mensaje-final {
-      text-align: center;
-      font-weight: bold;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #5a4300;
       margin-top: 20px;
+      text-shadow: 1px 1px 2px #7f6a00;
     }
 
-    #btn-volver-inicio {
-      margin-top: 15px;
-      background-color: #a05a0a;
-      color: white;
+    #btn-volver-inicio, #btn-comenzar {
+      background-color: #b38b00;
       border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
+      color: white;
+      font-weight: 700;
+      padding: 12px 25px;
+      border-radius: 10px;
       cursor: pointer;
-      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 8px #7f6a00bb;
+      transition: background-color 0.3s ease;
+      user-select: none;
     }
 
-    #btn-volver-inicio:hover {
-      background-color: #5a3e1b;
+    #btn-volver-inicio:hover, #btn-comenzar:hover {
+      background-color: #7f6a00;
+    }
+
+    .menu-bloques {
+      margin-bottom: 25px;
+    }
+
+    select {
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: 2px solid #a68000;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-right: 12px;
+      min-width: 160px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px #a6800055;
+      user-select: none;
     }
 
     @media (max-width: 500px) {
       button.opcion {
         flex: 1 1 100%;
+      }
+      select {
+        width: 100%;
+        margin-bottom: 12px;
       }
     }
   </style>
@@ -111,12 +144,17 @@
   </div>
 
   <script>
+    // Sonidos públicos gratuitos para demo
+    const sonidoCorrecto = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
+    const sonidoIncorrecto = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+    const sonidoInicio = new Audio('https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg');
+    const sonidoFin = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+
     let datosQuiz = [];
     let preguntas = [];
     let indice = 0;
     let pasoLibro = true;
 
-    // Contadores de aciertos
     let aciertosLibro = 0;
     let aciertosCapitulo = 0;
 
@@ -164,13 +202,15 @@
       quiz.style.display = 'block';
     }
 
-    function evaluarRespuesta(opcion) {
+    async function evaluarRespuesta(opcion) {
       const actual = preguntas[indice];
       if (pasoLibro) {
         if (opcion === actual.libro) {
           aciertosLibro++;
+          await reproducirSonido(sonidoCorrecto);
           alert("✅ Libro correcto. Ahora el capítulo.");
         } else {
+          await reproducirSonido(sonidoIncorrecto);
           alert(`❌ Era: ${actual.libro}. Ahora el capítulo.`);
         }
         pasoLibro = false;
@@ -178,8 +218,10 @@
       } else {
         if (parseInt(opcion) === actual.capitulo) {
           aciertosCapitulo++;
+          await reproducirSonido(sonidoCorrecto);
           alert("✅ Capítulo correcto. Siguiente cita.");
         } else {
+          await reproducirSonido(sonidoIncorrecto);
           alert(`❌ Era: ${actual.capitulo}. Siguiente cita.`);
         }
         indice++;
@@ -187,6 +229,7 @@
         if (indice < preguntas.length) {
           mostrarPregunta();
         } else {
+          await reproducirSonido(sonidoFin);
           mostrarResultadoFinal();
         }
       }
@@ -220,11 +263,8 @@
         <button id="btn-volver-inicio">Volver al inicio</button>
       `;
       contenedorFinal.style.display = 'block';
-
-      // Mostrar el selector de bloques para volver a empezar
       document.querySelector('.menu-bloques').style.display = 'block';
 
-      // Agregar evento para reiniciar
       document.getElementById('btn-volver-inicio').addEventListener('click', reiniciar);
     }
 
@@ -238,6 +278,7 @@
       aciertosCapitulo = 0;
       document.querySelector('.menu-bloques').style.display = 'none';
       document.getElementById('mensaje-final').style.display = 'none';
+      sonidoInicio.play();
       mostrarPregunta();
     }
 
@@ -253,6 +294,15 @@
       document.getElementById('pregunta').textContent = '';
       document.getElementById('opciones').innerHTML = '';
       document.getElementById('selector-bloques').value = "";
+    }
+
+    // Función para reproducir sonido y esperar a que termine
+    function reproducirSonido(audio) {
+      return new Promise(resolve => {
+        audio.currentTime = 0;
+        audio.play();
+        audio.onended = () => resolve();
+      });
     }
 
     document.getElementById('btn-comenzar').addEventListener('click', comenzarQuiz);
