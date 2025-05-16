@@ -1,84 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Quiz por Bloque</title>
-<style>
-  #quiz, #mensaje-final { display: none; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quiz por Bloque</title>
+  <link rel="stylesheet" href="estilos.css" />
+  <style>
+    #quiz, #mensaje-final { display: none; }
+  </style>
 </head>
 <body>
 
-<h2>Selecciona un Bloque para iniciar</h2>
+  <div class="container">
+    <h1>Selecciona un Bloque</h1>
 
-<select id="selector-bloques"></select>
-<button id="btn-comenzar">Comenzar</button>
+    <div class="menu-bloques">
+      <select id="selector-bloques"></select>
+      <button id="btn-comenzar">Comenzar</button>
+    </div>
 
-<div id="quiz">
-  <h3>Preguntas del bloque seleccionado</h3>
-  <div id="preguntas"></div>
-</div>
+    <div id="quiz">
+      <div id="progreso"></div>
+      <div id="cita"></div>
+      <div class="botones-opcion" id="opciones"></div>
+    </div>
 
-<div id="mensaje-final"></div>
+    <div id="mensaje-final" class="resultado"></div>
+  </div>
 
-<script>
-let datosQuiz = [];
-let preguntasFiltradas = [];
-
-async function cargarDatos() {
-  try {
-    const response = await fetch('citas.json');
-    if (!response.ok) throw new Error('No se pudo cargar citas.json');
-    datosQuiz = await response.json();
-
-    // Extraer bloques únicos
-    const bloquesUnicos = [...new Set(datosQuiz.map(q => q.bloque))];
-    const selector = document.getElementById('selector-bloques');
-    selector.innerHTML = '<option value="">-- Elige un bloque --</option>';
-    bloquesUnicos.forEach(b => {
-      const option = document.createElement('option');
-      option.value = b;
-      option.textContent = `Bloque ${b}`;
-      selector.appendChild(option);
-    });
-  } catch (error) {
-    alert('Error cargando datos: ' + error.message);
-  }
-}
-
-function comenzarQuiz() {
-  const selector = document.getElementById('selector-bloques');
-  const bloqueElegido = selector.value;
-  if (!bloqueElegido) {
-    alert('Por favor selecciona un bloque');
-    return;
-  }
-
-  // Filtrar preguntas del bloque elegido
-  preguntasFiltradas = datosQuiz.filter(p => p.bloque == bloqueElegido);
-
-  // Ocultar selector y botón
-  selector.style.display = 'none';
-  document.getElementById('btn-comenzar').style.display = 'none';
-
-  // Mostrar preguntas (solo texto para testear)
-  const contenedorPreguntas = document.getElementById('preguntas');
-  contenedorPreguntas.innerHTML = '';
-  preguntasFiltradas.forEach((p, i) => {
-    const div = document.createElement('div');
-    div.innerHTML = `<b>Pregunta ${i+1}:</b> ${p.cita}`;
-    contenedorPreguntas.appendChild(div);
-  });
-
-  document.getElementById('quiz').style.display = 'block';
-}
-
-document.getElementById('btn-comenzar').addEventListener('click', comenzarQuiz);
-
-cargarDatos();
-</script>
-
+  <script src="app.js"></script>
 </body>
 </html>
-
