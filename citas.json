@@ -1,282 +1,382 @@
 [
   {
+    "id": 1,
     "bloque": 1,
     "cita": "El Señor es mi pastor, nada me falta.",
     "libro": "Salmos",
     "capitulo": 23,
-    "opcion_1": "Salmos",
-    "opcion_2": "Proverbios",
-    "opcion_3": "Isaías",
-    "opcion_4": "Mateo",
-    "opcion_cap_1": 23,
-    "opcion_cap_2": 1,
-    "opcion_cap_3": 91,
-    "opcion_cap_4": 3
+    "opciones_libro": [
+      "Salmos",
+      "Proverbios",
+      "Isaías",
+      "Mateo"
+    ],
+    "opciones_capitulo": [
+      23,
+      1,
+      91,
+      3
+    ]
   },
   {
+    "id": 2,
     "bloque": 1,
     "cita": "Porque tanto amó Dios al mundo que dio a su Hijo unigénito...",
     "libro": "Juan",
     "capitulo": 3,
-    "opcion_1": "Juan",
-    "opcion_2": "Mateo",
-    "opcion_3": "Romanos",
-    "opcion_4": "Génesis",
-    "opcion_cap_1": 3,
-    "opcion_cap_2": 6,
-    "opcion_cap_3": 1,
-    "opcion_cap_4": 10
+    "opciones_libro": [
+      "Juan",
+      "Mateo",
+      "Romanos",
+      "Génesis"
+    ],
+    "opciones_capitulo": [
+      3,
+      6,
+      1,
+      10
+    ]
   },
   {
+    "id": 3,
     "bloque": 1,
     "cita": "Yo soy el camino, la verdad y la vida.",
     "libro": "Juan",
     "capitulo": 14,
-    "opcion_1": "Juan",
-    "opcion_2": "Lucas",
-    "opcion_3": "Hechos",
-    "opcion_4": "Apocalipsis",
-    "opcion_cap_1": 14,
-    "opcion_cap_2": 3,
-    "opcion_cap_3": 10,
-    "opcion_cap_4": 21
+    "opciones_libro": [
+      "Juan",
+      "Lucas",
+      "Hechos",
+      "Apocalipsis"
+    ],
+    "opciones_capitulo": [
+      14,
+      3,
+      10,
+      21
+    ]
   },
   {
+    "id": 4,
     "bloque": 1,
     "cita": "No temas, porque yo estoy contigo.",
     "libro": "Isaías",
     "capitulo": 41,
-    "opcion_1": "Isaías",
-    "opcion_2": "Jeremías",
-    "opcion_3": "Ezequiel",
-    "opcion_4": "Daniel",
-    "opcion_cap_1": 41,
-    "opcion_cap_2": 40,
-    "opcion_cap_3": 43,
-    "opcion_cap_4": 44
+    "opciones_libro": [
+      "Isaías",
+      "Jeremías",
+      "Ezequiel",
+      "Daniel"
+    ],
+    "opciones_capitulo": [
+      41,
+      40,
+      43,
+      44
+    ]
   },
   {
+    "id": 5,
     "bloque": 1,
     "cita": "En el principio creó Dios los cielos y la tierra.",
     "libro": "Génesis",
     "capitulo": 1,
-    "opcion_1": "Génesis",
-    "opcion_2": "Éxodo",
-    "opcion_3": "Levítico",
-    "opcion_4": "Números",
-    "opcion_cap_1": 1,
-    "opcion_cap_2": 2,
-    "opcion_cap_3": 3,
-    "opcion_cap_4": 4
+    "opciones_libro": [
+      "Génesis",
+      "Éxodo",
+      "Levítico",
+      "Números"
+    ],
+    "opciones_capitulo": [
+      1,
+      2,
+      3,
+      4
+    ]
   },
   {
+    "id": 6,
     "bloque": 1,
     "cita": "Bienaventurados los pobres en espíritu...",
     "libro": "Mateo",
     "capitulo": 5,
-    "opcion_1": "Mateo",
-    "opcion_2": "Marcos",
-    "opcion_3": "Lucas",
-    "opcion_4": "Juan",
-    "opcion_cap_1": 5,
-    "opcion_cap_2": 6,
-    "opcion_cap_3": 7,
-    "opcion_cap_4": 8
+    "opciones_libro": [
+      "Mateo",
+      "Marcos",
+      "Lucas",
+      "Juan"
+    ],
+    "opciones_capitulo": [
+      5,
+      6,
+      7,
+      8
+    ]
   },
   {
+    "id": 7,
     "bloque": 1,
     "cita": "Todo lo puedo en Cristo que me fortalece.",
     "libro": "Filipenses",
     "capitulo": 4,
-    "opcion_1": "Filipenses",
-    "opcion_2": "Colosenses",
-    "opcion_3": "Efesios",
-    "opcion_4": "Tesalonicenses",
-    "opcion_cap_1": 4,
-    "opcion_cap_2": 3,
-    "opcion_cap_3": 2,
-    "opcion_cap_4": 5
+    "opciones_libro": [
+      "Filipenses",
+      "Colosenses",
+      "Efesios",
+      "Tesalonicenses"
+    ],
+    "opciones_capitulo": [
+      4,
+      3,
+      2,
+      5
+    ]
   },
   {
+    "id": 8,
     "bloque": 1,
     "cita": "El que habita al abrigo del Altísimo morará bajo la sombra del Omnipotente.",
     "libro": "Salmos",
     "capitulo": 91,
-    "opcion_1": "Salmos",
-    "opcion_2": "Proverbios",
-    "opcion_3": "Job",
-    "opcion_4": "Isaías",
-    "opcion_cap_1": 91,
-    "opcion_cap_2": 90,
-    "opcion_cap_3": 92,
-    "opcion_cap_4": 93
+    "opciones_libro": [
+      "Salmos",
+      "Proverbios",
+      "Job",
+      "Isaías"
+    ],
+    "opciones_capitulo": [
+      91,
+      90,
+      92,
+      93
+    ]
   },
   {
+    "id": 9,
     "bloque": 1,
     "cita": "Porque donde están dos o tres congregados en mi nombre...",
     "libro": "Mateo",
     "capitulo": 18,
-    "opcion_1": "Mateo",
-    "opcion_2": "Marcos",
-    "opcion_3": "Hechos",
-    "opcion_4": "Romanos",
-    "opcion_cap_1": 18,
-    "opcion_cap_2": 16,
-    "opcion_cap_3": 20,
-    "opcion_cap_4": 15
+    "opciones_libro": [
+      "Mateo",
+      "Marcos",
+      "Hechos",
+      "Romanos"
+    ],
+    "opciones_capitulo": [
+      18,
+      16,
+      20,
+      15
+    ]
   },
   {
+    "id": 10,
     "bloque": 1,
     "cita": "No os conforméis a este mundo, sino transformaos por la renovación de vuestra mente.",
     "libro": "Romanos",
     "capitulo": 12,
-    "opcion_1": "Romanos",
-    "opcion_2": "Corintios",
-    "opcion_3": "Efesios",
-    "opcion_4": "Gálatas",
-    "opcion_cap_1": 12,
-    "opcion_cap_2": 13,
-    "opcion_cap_3": 11,
-    "opcion_cap_4": 10
+    "opciones_libro": [
+      "Romanos",
+      "Corintios",
+      "Efesios",
+      "Gálatas"
+    ],
+    "opciones_capitulo": [
+      12,
+      13,
+      11,
+      10
+    ]
   },
   {
+    "id": 11,
     "bloque": 2,
     "cita": "Amarás a tu prójimo como a ti mismo.",
     "libro": "Mateo",
     "capitulo": 22,
-    "opcion_1": "Mateo",
-    "opcion_2": "Levítico",
-    "opcion_3": "Deuteronomio",
-    "opcion_4": "Números",
-    "opcion_cap_1": 22,
-    "opcion_cap_2": 20,
-    "opcion_cap_3": 25,
-    "opcion_cap_4": 23
+    "opciones_libro": [
+      "Mateo",
+      "Levítico",
+      "Deuteronomio",
+      "Números"
+    ],
+    "opciones_capitulo": [
+      22,
+      20,
+      25,
+      23
+    ]
   },
   {
+    "id": 12,
     "bloque": 2,
     "cita": "El que no ama no conoce a Dios, porque Dios es amor.",
     "libro": "1 Juan",
     "capitulo": 4,
-    "opcion_1": "1 Juan",
-    "opcion_2": "Juan",
-    "opcion_3": "Romanos",
-    "opcion_4": "Efesios",
-    "opcion_cap_1": 4,
-    "opcion_cap_2": 3,
-    "opcion_cap_3": 2,
-    "opcion_cap_4": 5
+    "opciones_libro": [
+      "1 Juan",
+      "Juan",
+      "Romanos",
+      "Efesios"
+    ],
+    "opciones_capitulo": [
+      4,
+      3,
+      2,
+      5
+    ]
   },
   {
+    "id": 13,
     "bloque": 2,
     "cita": "Confía en el Señor con todo tu corazón.",
     "libro": "Proverbios",
     "capitulo": 3,
-    "opcion_1": "Proverbios",
-    "opcion_2": "Salmos",
-    "opcion_3": "Eclesiastés",
-    "opcion_4": "Isaías",
-    "opcion_cap_1": 3,
-    "opcion_cap_2": 4,
-    "opcion_cap_3": 5,
-    "opcion_cap_4": 6
+    "opciones_libro": [
+      "Proverbios",
+      "Salmos",
+      "Eclesiastés",
+      "Isaías"
+    ],
+    "opciones_capitulo": [
+      3,
+      4,
+      5,
+      6
+    ]
   },
   {
+    "id": 14,
     "bloque": 2,
     "cita": "Todo tiene su tiempo, y todo lo que se quiere debajo del cielo su hora.",
     "libro": "Eclesiastés",
     "capitulo": 3,
-    "opcion_1": "Eclesiastés",
-    "opcion_2": "Salmos",
-    "opcion_3": "Proverbios",
-    "opcion_4": "Job",
-    "opcion_cap_1": 3,
-    "opcion_cap_2": 4,
-    "opcion_cap_3": 5,
-    "opcion_cap_4": 6
+    "opciones_libro": [
+      "Eclesiastés",
+      "Salmos",
+      "Proverbios",
+      "Job"
+    ],
+    "opciones_capitulo": [
+      3,
+      4,
+      5,
+      6
+    ]
   },
   {
+    "id": 15,
     "bloque": 2,
     "cita": "El justo florecerá como la palmera.",
     "libro": "Salmos",
     "capitulo": 92,
-    "opcion_1": "Salmos",
-    "opcion_2": "Isaías",
-    "opcion_3": "Jeremías",
-    "opcion_4": "Job",
-    "opcion_cap_1": 92,
-    "opcion_cap_2": 93,
-    "opcion_cap_3": 90,
-    "opcion_cap_4": 91
+    "opciones_libro": [
+      "Salmos",
+      "Isaías",
+      "Jeremías",
+      "Job"
+    ],
+    "opciones_capitulo": [
+      92,
+      93,
+      90,
+      91
+    ]
   },
   {
+    "id": 16,
     "bloque": 2,
     "cita": "La fe es la certeza de lo que se espera.",
     "libro": "Hebreos",
     "capitulo": 11,
-    "opcion_1": "Hebreos",
-    "opcion_2": "Romanos",
-    "opcion_3": "Efesios",
-    "opcion_4": "Gálatas",
-    "opcion_cap_1": 11,
-    "opcion_cap_2": 10,
-    "opcion_cap_3": 12,
-    "opcion_cap_4": 9
+    "opciones_libro": [
+      "Hebreos",
+      "Romanos",
+      "Efesios",
+      "Gálatas"
+    ],
+    "opciones_capitulo": [
+      11,
+      10,
+      12,
+      9
+    ]
   },
   {
+    "id": 17,
     "bloque": 2,
     "cita": "Sed siempre humildes y amables.",
     "libro": "Efesios",
     "capitulo": 4,
-    "opcion_1": "Efesios",
-    "opcion_2": "Filipenses",
-    "opcion_3": "Colosenses",
-    "opcion_4": "Tesalonicenses",
-    "opcion_cap_1": 4,
-    "opcion_cap_2": 3,
-    "opcion_cap_3": 5,
-    "opcion_cap_4": 6
+    "opciones_libro": [
+      "Efesios",
+      "Filipenses",
+      "Colosenses",
+      "Tesalonicenses"
+    ],
+    "opciones_capitulo": [
+      4,
+      3,
+      5,
+      6
+    ]
   },
   {
+    "id": 18,
     "bloque": 2,
     "cita": "No os hagáis tesoros en la tierra.",
     "libro": "Mateo",
     "capitulo": 6,
-    "opcion_1": "Mateo",
-    "opcion_2": "Lucas",
-    "opcion_3": "Juan",
-    "opcion_4": "Marcos",
-    "opcion_cap_1": 6,
-    "opcion_cap_2": 5,
-    "opcion_cap_3": 7,
-    "opcion_cap_4": 4
+    "opciones_libro": [
+      "Mateo",
+      "Lucas",
+      "Juan",
+      "Marcos"
+    ],
+    "opciones_capitulo": [
+      6,
+      5,
+      7,
+      4
+    ]
   },
   {
+    "id": 19,
     "bloque": 2,
     "cita": "Honra a tu padre y a tu madre.",
     "libro": "Éxodo",
     "capitulo": 20,
-    "opcion_1": "Éxodo",
-    "opcion_2": "Levítico",
-    "opcion_3": "Deuteronomio",
-    "opcion_4": "Números",
-    "opcion_cap_1": 20,
-    "opcion_cap_2": 18,
-    "opcion_cap_3": 22,
-    "opcion_cap_4": 21
+    "opciones_libro": [
+      "Éxodo",
+      "Levítico",
+      "Deuteronomio",
+      "Números"
+    ],
+    "opciones_capitulo": [
+      20,
+      18,
+      22,
+      21
+    ]
   },
   {
+    "id": 20,
     "bloque": 2,
     "cita": "El Señor es mi luz y mi salvación; ¿a quién temeré?",
     "libro": "Salmos",
     "capitulo": 27,
-    "opcion_1": "Salmos",
-    "opcion_2": "Isaías",
-    "opcion_3": "Jeremías",
-    "opcion_4": "Job",
-    "opcion_cap_1": 27,
-    "opcion_cap_2": 26,
-    "opcion_cap_3": 28,
-    "opcion_cap_4": 25
+    "opciones_libro": [
+      "Salmos",
+      "Isaías",
+      "Jeremías",
+      "Job"
+    ],
+    "opciones_capitulo": [
+      27,
+      26,
+      28,
+      25
+    ]
   }
 ]
