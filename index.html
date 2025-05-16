@@ -3,47 +3,310 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Quiz Bíblico - Base Estable</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Quiz Bíblico Dorado</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background: linear-gradient(135deg, #f9f1d0, #b88e29);
+      color: #2b1f0e;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: #fff8dc;
+      border: 3px solid #b38b00;
+      border-radius: 15px;
+      padding: 25px 30px;
+      max-width: 650px;
+      width: 100%;
+      box-shadow: 0 0 20px #b38b00cc;
+      text-align: center;
+    }
+
+    h2 {
+      color: #b38b00;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 2px #6d5500;
+    }
+
+    #pregunta {
+      font-style: italic;
+      font-size: 1.25rem;
+      margin-bottom: 20px;
+      min-height: 72px;
+      color: #4a3c00;
+      text-shadow: 0 0 3px #b38b00bb;
+    }
+
+    .opciones {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    button.opcion {
+      background-color: #d7b740;
+      border: 2px solid #a68000;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      color: #3c2f00;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      flex: 1 1 40%;
+      min-width: 130px;
+      box-shadow: 0 4px 6px #a6800055;
+      user-select: none;
+    }
+
+    button.opcion:hover {
+      background-color: #a68000;
+      color: white;
+      box-shadow: 0 4px 10px #a68000cc;
+    }
+
+    #mensaje-final {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #5a4300;
+      margin-top: 20px;
+      text-shadow: 1px 1px 2px #7f6a00;
+    }
+
+    #btn-volver-inicio, #btn-comenzar {
+      background-color: #b38b00;
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 12px 25px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 8px #7f6a00bb;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    #btn-volver-inicio:hover, #btn-comenzar:hover {
+      background-color: #7f6a00;
+    }
+
+    .menu-bloques {
+      margin-bottom: 25px;
+    }
+
+    select {
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: 2px solid #a68000;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-right: 12px;
+      min-width: 160px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px #a6800055;
+      user-select: none;
+    }
+
+    @media (max-width: 500px) {
+      button.opcion {
+        flex: 1 1 100%;
+      }
+      select {
+        width: 100%;
+        margin-bottom: 12px;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>Quiz Bíblico - Selecciona Bloque</h1>
-
-    <div id="inicio">
-      <select id="selectBloque">
-        <option value="">-- Elige un bloque --</option>
-      </select>
-      <button id="btnComenzar" disabled>Comenzar</button>
+    <h2>Selecciona un Bloque</h2>
+    <div class="menu-bloques">
+      <select id="selector-bloques"></select>
+      <button id="btn-comenzar">Comenzar</button>
     </div>
 
-    <div id="quiz" class="hidden">
-      <div id="preguntaActual"></div>
-      <div id="cita"></div>
-
-      <div class="opciones">
-        <div>
-          <h3>Libro</h3>
-          <div id="opcionesLibro"></div>
-        </div>
-        <div>
-          <h3>Capítulo</h3>
-          <div id="opcionesCapitulo"></div>
-        </div>
-      </div>
-
-      <button id="btnSiguiente" disabled>Siguiente</button>
+    <div id="quiz" style="display: none;">
+      <div id="pregunta"></div>
+      <div class="opciones" id="opciones"></div>
     </div>
 
-    <div id="resultado" class="hidden">
-      <h2>Resultados</h2>
-      <p id="porcentaje"></p>
-      <p id="mensaje"></p>
-      <button id="btnReiniciar">Reiniciar bloque</button>
-      <button id="btnVolver">Volver al inicio</button>
-    </div>
+    <div id="mensaje-final" style="display: none;"></div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    // Sonidos públicos gratuitos para demo
+    const sonidoCorrecto = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
+    const sonidoIncorrecto = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+    const sonidoInicio = new Audio('https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg');
+    const sonidoFin = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg');
+
+    let datosQuiz = [];
+    let preguntas = [];
+    let indice = 0;
+    let pasoLibro = true;
+
+    let aciertosLibro = 0;
+    let aciertosCapitulo = 0;
+
+    async function cargarDatos() {
+      try {
+        const res = await fetch('citas.json');
+        datosQuiz = await res.json();
+        const bloques = [...new Set(datosQuiz.map(p => p.bloque))];
+        const selector = document.getElementById('selector-bloques');
+        selector.innerHTML = '<option value="">-- Elige un bloque --</option>';
+        bloques.forEach(b => {
+          const option = document.createElement('option');
+          option.value = b;
+          option.textContent = Bloque ${b};
+          selector.appendChild(option);
+        });
+      } catch (err) {
+        alert("Error cargando citas.json");
+      }
+    }
+
+    function mezclar(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function mostrarPregunta() {
+      const quiz = document.getElementById('quiz');
+      const contenedor = document.getElementById('opciones');
+      const cita = preguntas[indice];
+      contenedor.innerHTML = "";
+      document.getElementById('pregunta').textContent = "${cita.cita}";
+
+      const opciones = pasoLibro
+        ? mezclar(cita.opciones_libro)
+        : mezclar(cita.opciones_capitulo.map(c => String(c)));
+
+      opciones.forEach(opcion => {
+        const btn = document.createElement('button');
+        btn.className = 'opcion';
+        btn.textContent = opcion;
+        btn.onclick = () => evaluarRespuesta(opcion);
+        contenedor.appendChild(btn);
+      });
+
+      quiz.style.display = 'block';
+    }
+
+    async function evaluarRespuesta(opcion) {
+      const actual = preguntas[indice];
+      if (pasoLibro) {
+        if (opcion === actual.libro) {
+          aciertosLibro++;
+          await reproducirSonido(sonidoCorrecto);
+          alert("✅ Libro correcto. Ahora el capítulo.");
+        } else {
+          await reproducirSonido(sonidoIncorrecto);
+          alert(❌ Era: ${actual.libro}. Ahora el capítulo.);
+        }
+        pasoLibro = false;
+        mostrarPregunta();
+      } else {
+        if (parseInt(opcion) === actual.capitulo) {
+          aciertosCapitulo++;
+          await reproducirSonido(sonidoCorrecto);
+          alert("✅ Capítulo correcto. Siguiente cita.");
+        } else {
+          await reproducirSonido(sonidoIncorrecto);
+          alert(❌ Era: ${actual.capitulo}. Siguiente cita.);
+        }
+        indice++;
+        pasoLibro = true;
+        if (indice < preguntas.length) {
+          mostrarPregunta();
+        } else {
+          await reproducirSonido(sonidoFin);
+          mostrarResultadoFinal();
+        }
+      }
+    }
+
+    function mostrarResultadoFinal() {
+      document.getElementById('quiz').style.display = 'none';
+
+      const total = preguntas.length;
+      const porcentajeLibros = Math.round((aciertosLibro / total) * 100);
+      const porcentajeCapitulos = Math.round((aciertosCapitulo / total) * 100);
+      const promedio = Math.round((porcentajeLibros + porcentajeCapitulos) / 2);
+
+      let mensajeNivel = '';
+      if (promedio >= 90) {
+        mensajeNivel = '¡Excelente! Eres un experto en las citas bíblicas.';
+      } else if (promedio >= 70) {
+        mensajeNivel = 'Muy bien, tienes buen conocimiento, pero puedes mejorar.';
+      } else if (promedio >= 50) {
+        mensajeNivel = 'Está bien, pero te recomiendo seguir practicando.';
+      } else {
+        mensajeNivel = 'Necesitas estudiar más para mejorar tus respuestas.';
+      }
+
+      const contenedorFinal = document.getElementById('mensaje-final');
+      contenedorFinal.innerHTML = 
+        <h2>¡Has terminado el bloque!</h2>
+        <p>✅ Aciertos en LIBROS: ${aciertosLibro} / ${total} (${porcentajeLibros}%)</p>
+        <p>✅ Aciertos en CAPÍTULOS: ${aciertosCapitulo} / ${total} (${porcentajeCapitulos}%)</p>
+        <p><strong>${mensajeNivel}</strong></p>
+        <button id="btn-volver-inicio">Volver al inicio</button>
+      ;
+      contenedorFinal.style.display = 'block';
+      document.querySelector('.menu-bloques').style.display = 'block';
+
+      document.getElementById('btn-volver-inicio').addEventListener('click', reiniciar);
+    }
+
+    function comenzarQuiz() {
+      const bloque = document.getElementById('selector-bloques').value;
+      if (!bloque) return alert("Selecciona un bloque primero");
+      preguntas = datosQuiz.filter(p => p.bloque == bloque);
+      indice = 0;
+      pasoLibro = true;
+      aciertosLibro = 0;
+      aciertosCapitulo = 0;
+      document.querySelector('.menu-bloques').style.display = 'none';
+      document.getElementById('mensaje-final').style.display = 'none';
+      sonidoInicio.play();
+      mostrarPregunta();
+    }
+
+    function reiniciar() {
+      indice = 0;
+      pasoLibro = true;
+      aciertosLibro = 0;
+      aciertosCapitulo = 0;
+      preguntas = [];
+      document.getElementById('mensaje-final').style.display = 'none';
+      document.getElementById('quiz').style.display = 'none';
+      document.querySelector('.menu-bloques').style.display = 'block';
+      document.getElementById('pregunta').textContent = '';
+      document.getElementById('opciones').innerHTML = '';
+      document.getElementById('selector-bloques').value = "";
+    }
+
+    // Función para reproducir sonido y esperar a que termine
+    function reproducirSonido(audio) {
+      return new Promise(resolve => {
+        audio.currentTime = 0;
+        audio.play();
+        audio.onended = () => resolve();
+      });
+    }
+
+    document.getElementById('btn-comenzar').addEventListener('click', comenzarQuiz);
+    cargarDatos();
+  </script>
 </body>
 </html>
