@@ -1,32 +1,58 @@
-let datos = [];
-let bloqueSeleccionado = null;
-let preguntas = [];
-let indicePregunta = 0;
-let respuestasUsuario = [];
+// Datos estáticos para prueba, similar a citas.json
+const datos = [
+  {
+    id: 1,
+    bloque: 1,
+    cita: "El Señor es mi pastor, nada me falta.",
+    libro: "Salmos",
+    capitulo: 23,
+    opciones_libro: ["Salmos", "Proverbios", "Isaías", "Mateo"],
+    opciones_capitulo: [22, 23, 24, 25]
+  },
+  {
+    id: 2,
+    bloque: 1,
+    cita: "En el principio creó Dios los cielos y la tierra.",
+    libro: "Génesis",
+    capitulo: 1,
+    opciones_libro: ["Génesis", "Éxodo", "Levítico", "Números"],
+    opciones_capitulo: [1, 2, 3, 4]
+  },
+  {
+    id: 3,
+    bloque: 2,
+    cita: "Yo soy el camino, la verdad y la vida.",
+    libro: "Juan",
+    capitulo: 14,
+    opciones_libro: ["Mateo", "Marcos", "Lucas", "Juan"],
+    opciones_capitulo: [12, 13, 14, 15]
+  }
+];
 
-const inicioDiv = document.getElementById('inicio');
+let bloqueSeleccionado = null;
+let preguntasBloque = [];
+let preguntaIndex = 0;
+let correctasLibro = 0;
+let correctasCapitulo = 0;
+
 const selectBloque = document.getElementById('selectBloque');
 const btnComenzar = document.getElementById('btnComenzar');
-
+const inicioDiv = document.getElementById('inicio');
 const quizDiv = document.getElementById('quiz');
-const textoCita = document.getElementById('textoCita');
+const resultadoDiv = document.getElementById('resultado');
+
+const preguntaActualDiv = document.getElementById('preguntaActual');
+const citaDiv = document.getElementById('cita');
 const opcionesLibroDiv = document.getElementById('opcionesLibro');
 const opcionesCapituloDiv = document.getElementById('opcionesCapitulo');
-const btnSiguiente = document.getElementById('btnSiguiente');
 
-const resultadoDiv = document.getElementById('resultado');
+const btnSiguiente = document.getElementById('btnSiguiente');
 const porcentajeP = document.getElementById('porcentaje');
 const mensajeP = document.getElementById('mensaje');
 const btnReiniciar = document.getElementById('btnReiniciar');
 const btnVolver = document.getElementById('btnVolver');
 
-const audioCorrecto = document.getElementById('audioCorrecto');
-const audioIncorrecto = document.getElementById('audioIncorrecto');
-
-let seleccionLibro = null;
-let seleccionCapitulo = null;
-
-// Llena selectBloque dinámicamente con bloques únicos ordenados
+// Inicializa select con bloques únicos
 function llenarSelectBloques() {
   const bloquesUnicos = [...new Set(datos.map(d => d.bloque))].sort((a,b)=>a-b);
   bloquesUnicos.forEach(bloque => {
@@ -37,156 +63,143 @@ function llenarSelectBloques() {
   });
 }
 
+// Habilita botón comenzar si bloque seleccionado
 selectBloque.addEventListener('change', () => {
   btnComenzar.disabled = !selectBloque.value;
 });
 
+// Comenzar quiz
 btnComenzar.addEventListener('click', () => {
-  bloqueSeleccionado = parseInt(selectBloque.value);
-  preguntas = datos.filter(p => p.bloque === bloqueSeleccionado);
-  if (preguntas.length === 0) {
-    alert('No hay preguntas para ese bloque');
-    return;
-  }
-  inicioDiv.classList.add('oculto');
-  quizDiv.classList.remove('oculto');
-  indicePregunta = 0;
-  respuestasUsuario = [];
+  bloqueSeleccionado = Number(selectBloque.value);
+  preguntasBloque = datos.filter(p => p.bloque === bloqueSeleccionado);
+  preguntaIndex = 0;
+  correctasLibro = 0;
+  correctasCapitulo = 0;
+
+  inicioDiv.classList.add('hidden');
+  resultadoDiv.classList.add('hidden');
+  quizDiv.classList.remove('hidden');
+
   mostrarPregunta();
   btnSiguiente.disabled = true;
 });
 
 function mostrarPregunta() {
   btnSiguiente.disabled = true;
-  resetearOpciones();
+  const p = preguntasBloque[preguntaIndex];
+  preguntaActualDiv.textContent = `Pregunta ${preguntaIndex + 1} de ${preguntasBloque.length}`;
+  citaDiv.textContent = `"${p.cita}"`;
 
-  const p = preguntas[indicePregunta];
-  textoCita.textContent = `"${p.cita}"`;
-
-  // Opciones libro
+  // Limpia opciones
   opcionesLibroDiv.innerHTML = '';
-  p.opciones_libro.forEach(libro => {
+  opcionesCapituloDiv.innerHTML = '';
+
+  // Mostrar opciones libro
+  p.opciones_libro.forEach(op => {
     const btn = document.createElement('button');
-    btn.textContent = libro;
-    btn.addEventListener('click', () => seleccionarOpcion('libro', libro, btn, p.libro));
+    btn.textContent = op;
+    btn.addEventListener('click', () => seleccionarRespuesta(btn, op, 'libro', p.libro));
     opcionesLibroDiv.appendChild(btn);
   });
 
-  // Opciones capitulo
-  opcionesCapituloDiv.innerHTML = '';
-  p.opciones_capitulo.forEach(cap => {
+  // Mostrar opciones capítulo
+  p.opciones_capitulo.forEach(op => {
     const btn = document.createElement('button');
-    btn.textContent = cap;
-    btn.addEventListener('click', () => seleccionarOpcion('capitulo', cap, btn, p.capitulo));
+    btn.textContent = op;
+    btn.addEventListener('click', () => seleccionarRespuesta(btn, op, 'capitulo', p.capitulo));
     opcionesCapituloDiv.appendChild(btn);
   });
-
-  seleccionLibro = null;
-  seleccionCapitulo = null;
 }
 
-function seleccionarOpcion(tipo, valor, boton, respuestaCorrecta) {
-  if (tipo === 'libro') {
-    seleccionLibro = valor;
-    // Quitar clases previas
-    [...opcionesLibroDiv.children].forEach(b => {
-      b.classList.remove('seleccionado', 'correcto', 'incorrecto');
-    });
-    // Marcar el elegido
-    boton.classList.add('seleccionado');
-    // Feedback inmediato
-    if(valor === respuestaCorrecta){
-      boton.classList.add('correcto');
-      audioCorrecto.play();
-    } else {
-      boton.classList.add('incorrecto');
-      audioIncorrecto.play();
-    }
-  } else {
-    seleccionCapitulo = valor;
-    [...opcionesCapituloDiv.children].forEach(b => {
-      b.classList.remove('seleccionado', 'correcto', 'incorrecto');
-    });
-    boton.classList.add('seleccionado');
-    if (valor === respuestaCorrecta) {
-      boton.classList.add('correcto');
-      audioCorrecto.play();
-    } else {
-      boton.classList.add('incorrecto');
-      audioIncorrecto.play();
-    }
+let libroRespondido = false;
+let capituloRespondido = false;
+
+function seleccionarRespuesta(button, opcion, tipo, correcta) {
+  if ((tipo === 'libro' && libroRespondido) || (tipo === 'capitulo' && capituloRespondido)) {
+    return; // no permitir cambiar respuesta ya dada
   }
-  // Habilitar botón siguiente solo si ya seleccionó ambos
-  btnSiguiente.disabled = !(seleccionLibro && seleccionCapitulo);
+
+  if (tipo === 'libro') {
+    libroRespondido = true;
+  } else if (tipo === 'capitulo') {
+    capituloRespondido = true;
+  }
+
+  // Verificar si es correcta
+  const correcto = (opcion == correcta);
+  if (correcto) {
+    button.classList.add('correcto');
+    if (tipo === 'libro') correctasLibro++;
+    else if (tipo === 'capitulo') correctasCapitulo++;
+  } else {
+    button.classList.add('incorrecto');
+  }
+
+  // Deshabilitar botones de esa sección para que no cambie la respuesta
+  const container = (tipo === 'libro') ? opcionesLibroDiv : opcionesCapituloDiv;
+  Array.from(container.children).forEach(btn => btn.disabled = true);
+
+  // Si ya respondieron ambos, habilitar siguiente
+  if (libroRespondido && capituloRespondido) {
+    btnSiguiente.disabled = false;
+  }
 }
 
 btnSiguiente.addEventListener('click', () => {
-  // Guardar respuestas
-  respuestasUsuario.push({
-    libro: seleccionLibro,
-    capitulo: seleccionCapitulo,
-    correctoLibro: seleccionLibro === preguntas[indicePregunta].libro,
-    correctoCapitulo: seleccionCapitulo === preguntas[indicePregunta].capitulo,
-  });
+  preguntaIndex++;
+  libroRespondido = false;
+  capituloRespondido = false;
 
-  indicePregunta++;
-  if (indicePregunta < preguntas.length) {
+  if (preguntaIndex < preguntasBloque.length) {
     mostrarPregunta();
   } else {
     mostrarResultado();
   }
 });
 
+function mostrarResultado() {
+  quizDiv.classList.add('hidden');
+  resultadoDiv.classList.remove('hidden');
+
+  const total = preguntasBloque.length;
+  const porcentajeLibro = Math.round((correctasLibro / total) * 100);
+  const porcentajeCapitulo = Math.round((correctasCapitulo / total) * 100);
+  const promedio = Math.round((porcentajeLibro + porcentajeCapitulo) / 2);
+
+  porcentajeP.textContent = `Libro: ${porcentajeLibro}% | Capítulo: ${porcentajeCapitulo}% | Promedio: ${promedio}%`;
+
+  let mensaje = '';
+  if (promedio >= 80) {
+    mensaje = '¡Excelente! Gran conocimiento bíblico.';
+  } else if (promedio >= 50) {
+    mensaje = 'Buen trabajo, pero puedes mejorar.';
+  } else {
+    mensaje = 'Necesitas estudiar más la Biblia.';
+  }
+  mensajeP.textContent = mensaje;
+}
+
 btnReiniciar.addEventListener('click', () => {
-  indicePregunta = 0;
-  respuestasUsuario = [];
-  resultadoDiv.classList.add('oculto');
-  quizDiv.classList.remove('oculto');
+  preguntaIndex = 0;
+  correctasLibro = 0;
+  correctasCapitulo = 0;
+  libroRespondido = false;
+  capituloRespondido = false;
+
+  resultadoDiv.classList.add('hidden');
+  quizDiv.classList.remove('hidden');
+
   mostrarPregunta();
   btnSiguiente.disabled = true;
 });
 
 btnVolver.addEventListener('click', () => {
-  resultadoDiv.classList.add('oculto');
-  inicioDiv.classList.remove('oculto');
-  selectBloque.value = '';
+  resultadoDiv.classList.add('hidden');
+  quizDiv.classList.add('hidden');
+  inicioDiv.classList.remove('hidden');
+
+  selectBloque.value = "";
   btnComenzar.disabled = true;
 });
 
-// Mostrar resultado final con mensaje personalizado
-function mostrarResultado() {
-  quizDiv.classList.add('oculto');
-  resultadoDiv.classList.remove('oculto');
-
-  const total = respuestasUsuario.length;
-  const correctosLibro = respuestasUsuario.filter(r => r.correctoLibro).length;
-  const correctosCapitulo = respuestasUsuario.filter(r => r.correctoCapitulo).length;
-
-  const porcentajeLibro = Math.round((correctosLibro / total) * 100);
-  const porcentajeCapitulo = Math.round((correctosCapitulo / total) * 100);
-
-  porcentajeP.textContent = `Aciertos - Libro: ${porcentajeLibro}%. Capítulo: ${porcentajeCapitulo}%.`;
-
-  let mensaje = '';
-  if (porcentajeLibro > 80 && porcentajeCapitulo > 80) {
-    mensaje = '¡Excelente conocimiento bíblico!';
-  } else if (porcentajeLibro > 50 && porcentajeCapitulo > 50) {
-    mensaje = 'Buen trabajo, sigue practicando.';
-  } else {
-    mensaje = 'Te recomendamos estudiar más las citas bíblicas.';
-  }
-
-  mensajeP.textContent = mensaje;
-}
-
-// Cargar JSON de datos
-
-fetch('citas.json')
-  .then(res => res.json())
-  .then(json => {
-    datos = json;
-    llenarSelectBloques();
-  })
-  .catch(err => {
-    alert('Error al cargar los datos: ' + err);
-  });
+llenarSelectBloques();
