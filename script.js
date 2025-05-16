@@ -1,157 +1,220 @@
-// Datos de ejemplo, después podrías cargar datos JSON o CSV externos
+// Datos simulados (puedes cargar desde un archivo JSON real con fetch)
 const datos = [
-  { tema: "Fe", tipo: "reflexion", pregunta: "¿Qué significa tener fe?", respuesta: "Confiar plenamente en Dios." },
-  { tema: "Fe", tipo: "quiz", pregunta: "¿Quién fue Abraham?", opciones: ["Un profeta", "Un rey", "Un apóstol", "Un juez"], correcta: 0 },
-  { tema: "Amor", tipo: "reflexion", pregunta: "¿Cómo podemos demostrar amor en el matrimonio?", respuesta: "Con paciencia y respeto mutuo." },
-  { tema: "Amor", tipo: "quiz", pregunta: "¿Cuál es el mandamiento principal?", opciones: ["Amar a Dios", "Ser rico", "Tener poder", "Ser sabio"], correcta: 0 }
+  {
+    "id": 1,
+    "bloque": 1,
+    "cita": "El Señor es mi pastor, nada me falta.",
+    "libro": "Salmos",
+    "capitulo": 23,
+    "opciones_libro": [
+      "Salmos",
+      "Proverbios",
+      "Isaías",
+      "Mateo"
+    ],
+    "opciones_capitulo": [
+      23,
+      1,
+      91,
+      3
+    ]
+  },
+  {
+    "id": 2,
+    "bloque": 1,
+    "cita": "Porque tanto amó Dios al mundo que dio a su Hijo unigénito...",
+    "libro": "Juan",
+    "capitulo": 3,
+    "opciones_libro": [
+      "Juan",
+      "Mateo",
+      "Romanos",
+      "Génesis"
+    ],
+    "opciones_capitulo": [
+      3,
+      1,
+      5,
+      2
+    ]
+  },
+  // Agrega más datos según bloques
 ];
 
-// Elementos DOM
-const selectTemas = document.getElementById("temas");
-const selectTipo = document.getElementById("tipo");
-const btnIniciar = document.getElementById("btn-iniciar");
-const areaPreguntas = document.getElementById("area-preguntas");
-const preguntaEl = document.getElementById("pregunta");
-const opcionesEl = document.getElementById("opciones");
-const temporizadorEl = document.getElementById("barra");
-const btnRespuesta = document.getElementById("btn-respuesta");
-const resultadoEl = document.getElementById("resultado");
-const mensajeFinal = document.getElementById("mensaje-final");
-const btnReiniciar = document.getElementById("btn-reiniciar");
+const bloqueSelect = document.getElementById('bloque-select');
+const btnIniciar = document.getElementById('btn-iniciar');
+const quizContainer = document.getElementById('quiz-container');
+const preguntaNumero = document.getElementById('pregunta-numero');
+const citaTexto = document.getElementById('cita-texto');
+const opcionesLibroDiv = document.getElementById('opciones-libro');
+const opcionesCapituloDiv = document.getElementById('opciones-capitulo');
+const btnSiguiente = document.getElementById('btn-siguiente');
+const resultadoContainer = document.getElementById('resultado-container');
+const mensajeResultado = document.getElementById('mensaje-resultado');
+const porcentajeLibroSpan = document.getElementById('porcentaje-libro');
+const porcentajeCapituloSpan = document.getElementById('porcentaje-capitulo');
+const btnReiniciar = document.getElementById('btn-reiniciar');
+const btnCambiarBloque = document.getElementById('btn-cambiar-bloque');
 
-let preguntasFiltradas = [];
+let preguntasBloque = [];
 let indicePregunta = 0;
-let tiempo = 58;
-let intervalo;
+let respuestasLibro = [];
+let respuestasCapitulo = [];
 
-function cargarTemas() {
-  // Obtener temas únicos del arreglo datos
-  const temasUnicos = [...new Set(datos.map(d => d.tema))];
-  temasUnicos.forEach(tema => {
-    const option = document.createElement("option");
-    option.value = tema;
-    option.textContent = tema;
-    selectTemas.appendChild(option);
-  });
+function obtenerBloques() {
+  const bloquesUnicos = [...new Set(datos.map(d => d.bloque))];
+  return bloquesUnicos.sort((a,b) => a-b);
 }
 
-function iniciarJuego() {
-  // Obtener temas seleccionados (máx 3)
-  const temasSeleccionados = Array.from(selectTemas.selectedOptions).map(opt => opt.value);
-  if (temasSeleccionados.length === 0) {
-    alert("Por favor, selecciona al menos un tema.");
-    return;
-  }
-  if (temasSeleccionados.length > 3) {
-    alert("Puedes seleccionar máximo 3 temas.");
-    return;
-  }
-  const tipoSeleccionado = selectTipo.value;
-
-  // Filtrar preguntas según temas y tipo
-  preguntasFiltradas = datos.filter(p => temasSeleccionados.includes(p.tema) && p.tipo === tipoSeleccionado);
-  if (preguntasFiltradas.length === 0) {
-    alert("No hay preguntas para la selección realizada.");
-    return;
-  }
-
-  // Preparar UI
-  indicePregunta = 0;
-  btnIniciar.classList.add("oculto");
-  selectTemas.disabled = true;
-  selectTipo.disabled = true;
-  areaPreguntas.classList.remove("oculto");
-  resultadoEl.classList.add("oculto");
-  btnRespuesta.classList.add("oculto");
-
-  mostrarPregunta();
-  iniciarTemporizador();
+function llenarSelectBloques() {
+  const bloques = obtenerBloques();
+  bloques.forEach(bloque => {
+    const option = document.createElement('option');
+    option.value = bloque;
+    option.textContent = `Bloque ${bloque}`;
+    bloqueSelect.appendChild(option);
+  });
 }
 
 function mostrarPregunta() {
-  const p = preguntasFiltradas[indicePregunta];
-  preguntaEl.textContent = p.pregunta;
-  opcionesEl.innerHTML = "";
+  const pregunta = preguntasBloque[indicePregunta];
+  preguntaNumero.textContent = `Pregunta ${indicePregunta + 1} de ${preguntasBloque.length}`;
+  citaTexto.textContent = `"${pregunta.cita}"`;
 
-  if (p.tipo === "reflexion") {
-    btnRespuesta.classList.remove("oculto");
-    btnRespuesta.textContent = "Mostrar respuesta";
-  } else if (p.tipo === "quiz") {
-    btnRespuesta.classList.add("oculto");
-    p.opciones.forEach((opcion, i) => {
-      const btn = document.createElement("button");
-      btn.textContent = opcion;
-      btn.onclick = () => evaluarRespuesta(i);
-      opcionesEl.appendChild(btn);
+  // Limpiar opciones
+  opcionesLibroDiv.innerHTML = '';
+  opcionesCapituloDiv.innerHTML = '';
+
+  // Crear botones para opciones libro
+  pregunta.opciones_libro.forEach(opcion => {
+    const btn = document.createElement('button');
+    btn.textContent = opcion;
+    btn.addEventListener('click', () => {
+      seleccionarOpcion(opcionesLibroDiv, btn);
     });
-  }
-}
-
-function evaluarRespuesta(indice) {
-  const p = preguntasFiltradas[indicePregunta];
-  const botones = opcionesEl.querySelectorAll("button");
-
-  botones.forEach((btn, i) => {
-    btn.disabled = true;
-    if (i === p.correcta) {
-      btn.style.backgroundColor = "#4caf50";
-    } else if (i === indice) {
-      btn.style.backgroundColor = "#f44336";
-    }
+    opcionesLibroDiv.appendChild(btn);
   });
 
-  clearInterval(intervalo);
-  siguientePregunta();
+  // Crear botones para opciones capitulo
+  pregunta.opciones_capitulo.forEach(opcion => {
+    const btn = document.createElement('button');
+    btn.textContent = opcion;
+    btn.addEventListener('click', () => {
+      seleccionarOpcion(opcionesCapituloDiv, btn);
+    });
+    opcionesCapituloDiv.appendChild(btn);
+  });
 }
 
-function mostrarRespuesta() {
-  const p = preguntasFiltradas[indicePregunta];
-  alert(p.respuesta);
+function seleccionarOpcion(contenedor, botonSeleccionado) {
+  // Deseleccionar todos
+  const botones = contenedor.querySelectorAll('button');
+  botones.forEach(btn => btn.classList.remove('selected'));
+  // Seleccionar este
+  botonSeleccionado.classList.add('selected');
 }
 
-function iniciarTemporizador() {
-  tiempo = 58;
-  temporizadorEl.style.width = "100%";
-  temporizadorEl.style.backgroundColor = "#4caf50";
-  intervalo = setInterval(() => {
-    tiempo--;
-    const porcentaje = (tiempo / 58) * 100;
-    temporizadorEl.style.width = porcentaje + "%";
+function validarSeleccion() {
+  const seleccionLibro = opcionesLibroDiv.querySelector('button.selected');
+  const seleccionCapitulo = opcionesCapituloDiv.querySelector('button.selected');
 
-    if (tiempo <= 20) {
-      temporizadorEl.style.backgroundColor = "#ff9800";
-    }
-    if (tiempo <= 10) {
-      temporizadorEl.style.backgroundColor = "#f44336";
-    }
-    if (tiempo <= 0) {
-      clearInterval(intervalo);
-      siguientePregunta();
-    }
-  }, 1000);
+  if (!seleccionLibro || !seleccionCapitulo) {
+    alert('Por favor selecciona una opción para libro y capítulo.');
+    return false;
+  }
+  return true;
+}
+
+function guardarRespuesta() {
+  const pregunta = preguntasBloque[indicePregunta];
+  const seleccionLibro = opcionesLibroDiv.querySelector('button.selected').textContent;
+  const seleccionCapitulo = Number(opcionesCapituloDiv.querySelector('button.selected').textContent);
+
+  respuestasLibro.push(seleccionLibro === pregunta.libro);
+  respuestasCapitulo.push(seleccionCapitulo === pregunta.capitulo);
+}
+
+function mostrarResultadoFinal() {
+  quizContainer.classList.add('hidden');
+  resultadoContainer.classList.remove('hidden');
+
+  const correctosLibro = respuestasLibro.filter(r => r).length;
+  const correctosCapitulo = respuestasCapitulo.filter(r => r).length;
+  const total = preguntasBloque.length;
+
+  const porcentajeLibro = Math.round((correctosLibro / total) * 100);
+  const porcentajeCapitulo = Math.round((correctosCapitulo / total) * 100);
+
+  porcentajeLibroSpan.textContent = porcentajeLibro;
+  porcentajeCapituloSpan.textContent = porcentajeCapitulo;
+
+  let mensaje = '';
+  if (porcentajeLibro >= 80 && porcentajeCapitulo >= 80) {
+    mensaje = '¡Excelente conocimiento bíblico!';
+  } else if (porcentajeLibro >= 50 && porcentajeCapitulo >= 50) {
+    mensaje = 'Buen trabajo, pero puedes mejorar.';
+  } else {
+    mensaje = 'Sigue estudiando la Biblia, ¡ánimo!';
+  }
+  mensajeResultado.textContent = mensaje;
+}
+
+function iniciarQuiz() {
+  const bloqueSeleccionado = bloqueSelect.value;
+  if (!bloqueSeleccionado) return;
+
+  preguntasBloque = datos.filter(d => d.bloque == bloqueSeleccionado);
+  indicePregunta = 0;
+  respuestasLibro = [];
+  respuestasCapitulo = [];
+
+  // UI
+  document.getElementById('seleccion-bloque').classList.add('hidden');
+  resultadoContainer.classList.add('hidden');
+  quizContainer.classList.remove('hidden');
+
+  mostrarPregunta();
 }
 
 function siguientePregunta() {
+  if (!validarSeleccion()) return;
+
+  guardarRespuesta();
   indicePregunta++;
-  if (indicePregunta < preguntasFiltradas.length) {
-    mostrarPregunta();
-    iniciarTemporizador();
+
+  if (indicePregunta >= preguntasBloque.length) {
+    mostrarResultadoFinal();
   } else {
-    terminarJuego();
+    mostrarPregunta();
   }
 }
 
-function terminarJuego() {
-  areaPreguntas.classList.add("oculto");
-  resultadoEl.classList.remove("oculto");
-  mensajeFinal.textContent = "¡Has terminado! Gracias por participar.";
-  btnIniciar.classList.remove("oculto");
-  selectTemas.disabled = false;
-  selectTipo.disabled = false;
+function reiniciarQuiz() {
+  indicePregunta = 0;
+  respuestasLibro = [];
+  respuestasCapitulo = [];
+
+  resultadoContainer.classList.add('hidden');
+  quizContainer.classList.remove('hidden');
+
+  mostrarPregunta();
 }
 
-btnIniciar.addEventListener("click", iniciarJuego);
-btnRespuesta.addEventListener("click", mostrarRespuesta);
-btnReiniciar.addEventListener("click", () => location.reload());
+function cambiarBloque() {
+  resultadoContainer.classList.add('hidden');
+  document.getElementById('seleccion-bloque').classList.remove('hidden');
+  bloqueSelect.value = '';
+  btnIniciar.disabled = true;
+}
 
-cargarTemas();
+bloqueSelect.addEventListener('change', () => {
+  btnIniciar.disabled = !bloqueSelect.value;
+});
+
+btnIniciar.addEventListener('click', iniciarQuiz);
+btnSiguiente.addEventListener('click', siguientePregunta);
+btnReiniciar.addEventListener('click', reiniciarQuiz);
+btnCambiarBloque.addEventListener('click', cambiarBloque);
+
+// Inicializamos el select
+llenarSelectBloques();
