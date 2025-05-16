@@ -7,8 +7,8 @@
   <style>
     body {
       font-family: 'Georgia', serif;
-      background: linear-gradient(135deg, #f9f1d0, #b88e29);
-      color: #2b1f0e;
+      background: linear-gradient(135deg, #121212, #3a2f00); /* Fondo negro a marrón oscuro */
+      color: #f0d86f; /* Dorado claro */
       margin: 0;
       padding: 20px;
       min-height: 100vh;
@@ -18,20 +18,20 @@
     }
 
     .container {
-      background: #fff8dc;
-      border: 3px solid #b38b00;
+      background: #1e1a00; /* Fondo negro-marrón oscuro */
+      border: 3px solid #f0d86f; /* borde dorado */
       border-radius: 15px;
       padding: 25px 30px;
       max-width: 650px;
       width: 100%;
-      box-shadow: 0 0 20px #b38b00cc;
+      box-shadow: 0 0 25px 5px #f0d86f88;
       text-align: center;
     }
 
     h2 {
-      color: #b38b00;
+      color: #f0d86f;
       margin-bottom: 20px;
-      text-shadow: 1px 1px 2px #6d5500;
+      text-shadow: 1px 1px 3px #3a2f00cc;
     }
 
     #pregunta {
@@ -39,8 +39,8 @@
       font-size: 1.25rem;
       margin-bottom: 20px;
       min-height: 72px;
-      color: #4a3c00;
-      text-shadow: 0 0 3px #b38b00bb;
+      color: #f5e49a;
+      text-shadow: 0 0 5px #f0d86fbb;
     }
 
     .opciones {
@@ -52,51 +52,52 @@
     }
 
     button.opcion {
-      background-color: #d7b740;
-      border: 2px solid #a68000;
+      background-color: #f0d86f;
+      border: 2px solid #a67c00;
       padding: 12px 20px;
       border-radius: 10px;
       font-weight: 600;
       font-size: 1rem;
       cursor: pointer;
-      color: #3c2f00;
+      color: #2b2100;
       transition: background-color 0.3s ease, color 0.3s ease;
       flex: 1 1 40%;
       min-width: 130px;
-      box-shadow: 0 4px 6px #a6800055;
+      box-shadow: 0 4px 10px #a67c0055;
       user-select: none;
     }
 
     button.opcion:hover {
-      background-color: #a68000;
-      color: white;
-      box-shadow: 0 4px 10px #a68000cc;
+      background-color: #a67c00;
+      color: #f9f5d2;
+      box-shadow: 0 4px 15px #a67c00cc;
     }
 
     #mensaje-final {
       font-size: 1.3rem;
       font-weight: 700;
-      color: #5a4300;
+      color: #f0d86f;
       margin-top: 20px;
-      text-shadow: 1px 1px 2px #7f6a00;
+      text-shadow: 1px 1px 4px #3a2f0066;
     }
 
     #btn-volver-inicio, #btn-comenzar {
-      background-color: #b38b00;
+      background-color: #f0d86f;
       border: none;
-      color: white;
+      color: #2b2100;
       font-weight: 700;
       padding: 12px 25px;
       border-radius: 10px;
       cursor: pointer;
       font-size: 1.1rem;
-      box-shadow: 0 4px 8px #7f6a00bb;
+      box-shadow: 0 4px 12px #a67c00bb;
       transition: background-color 0.3s ease;
       user-select: none;
     }
 
     #btn-volver-inicio:hover, #btn-comenzar:hover {
-      background-color: #7f6a00;
+      background-color: #a67c00;
+      color: #f9f5d2;
     }
 
     .menu-bloques {
@@ -106,14 +107,21 @@
     select {
       padding: 10px 15px;
       border-radius: 10px;
-      border: 2px solid #a68000;
+      border: 2px solid #a67c00;
       font-weight: 600;
       font-size: 1rem;
       margin-right: 12px;
       min-width: 160px;
       cursor: pointer;
-      box-shadow: 0 2px 5px #a6800055;
+      box-shadow: 0 2px 7px #a67c0055;
       user-select: none;
+      background: #2b2100;
+      color: #f0d86f;
+    }
+
+    select option {
+      background: #1e1a00;
+      color: #f0d86f;
     }
 
     @media (max-width: 500px) {
@@ -269,34 +277,33 @@
     }
 
     function comenzarQuiz() {
-      const bloque = document.getElementById('selector-bloques').value;
-      if (!bloque) return alert("Selecciona un bloque primero");
-      preguntas = datosQuiz.filter(p => p.bloque == bloque);
+      const selector = document.getElementById('selector-bloques');
+      const bloqueSeleccionado = selector.value;
+      if (!bloqueSeleccionado) {
+        alert("Por favor, selecciona un bloque para comenzar.");
+        return;
+      }
+
+      preguntas = datosQuiz.filter(p => p.bloque === bloqueSeleccionado);
       indice = 0;
-      pasoLibro = true;
       aciertosLibro = 0;
       aciertosCapitulo = 0;
-      document.querySelector('.menu-bloques').style.display = 'none';
+      pasoLibro = true;
+
       document.getElementById('mensaje-final').style.display = 'none';
-      sonidoInicio.play();
+      document.querySelector('.menu-bloques').style.display = 'none';
       mostrarPregunta();
+
+      sonidoInicio.play();
     }
 
     function reiniciar() {
-      indice = 0;
-      pasoLibro = true;
-      aciertosLibro = 0;
-      aciertosCapitulo = 0;
-      preguntas = [];
       document.getElementById('mensaje-final').style.display = 'none';
       document.getElementById('quiz').style.display = 'none';
       document.querySelector('.menu-bloques').style.display = 'block';
-      document.getElementById('pregunta').textContent = '';
-      document.getElementById('opciones').innerHTML = '';
-      document.getElementById('selector-bloques').value = "";
+      document.getElementById('selector-bloques').value = '';
     }
 
-    // Función para reproducir sonido y esperar a que termine
     function reproducirSonido(audio) {
       return new Promise(resolve => {
         audio.currentTime = 0;
@@ -305,8 +312,9 @@
       });
     }
 
-    document.getElementById('btn-comenzar').addEventListener('click', comenzarQuiz);
     cargarDatos();
+
+    document.getElementById('btn-comenzar').addEventListener('click', comenzarQuiz);
   </script>
 </body>
 </html>
