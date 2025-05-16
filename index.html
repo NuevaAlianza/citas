@@ -3,41 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mi app de preguntas por tema</title>
+  <title>Quiz Citas Bíblicas</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div class="container">
+    <h1>Quiz Citas Bíblicas</h1>
 
-  <div id="contenedor">
-    <h1>Preguntas por Tema y Tipo</h1>
-    
-    <div id="selector-temas">
-      <label for="temas">Selecciona temas (máx 3):</label><br />
-      <select id="temas" multiple size="5"></select>
-    </div>
-    
-    <div id="selector-tipo">
-      <label>Selecciona tipo:</label><br />
-      <select id="tipo">
-        <option value="reflexion">Reflexión</option>
-        <option value="quiz">Quiz</option>
+    <div id="seleccion-bloque">
+      <label for="bloque-select">Selecciona un bloque:</label>
+      <select id="bloque-select">
+        <option value="">-- Elige bloque --</option>
       </select>
+      <button id="btn-iniciar" disabled>Iniciar Quiz</button>
     </div>
-    
-    <button id="btn-iniciar">Iniciar</button>
 
-    <div id="area-preguntas" class="oculto">
-      <div id="pregunta"></div>
-      <div id="opciones"></div>
-      <div id="temporizador">
-        <div id="barra"></div>
+    <div id="quiz-container" class="hidden">
+      <div id="pregunta-numero"></div>
+      <div id="cita-texto"></div>
+
+      <div class="opciones-container">
+        <h3>¿Cuál es el libro?</h3>
+        <div id="opciones-libro"></div>
       </div>
-      <button id="btn-respuesta" class="oculto">Mostrar respuesta</button>
+
+      <div class="opciones-container">
+        <h3>¿Cuál es el capítulo?</h3>
+        <div id="opciones-capitulo"></div>
+      </div>
+
+      <button id="btn-siguiente">Siguiente</button>
     </div>
 
-    <div id="resultado" class="oculto">
-      <p id="mensaje-final"></p>
-      <button id="btn-reiniciar">Reiniciar</button>
+    <div id="resultado-container" class="hidden">
+      <h2>Resultado final</h2>
+      <p id="mensaje-resultado"></p>
+      <p>Porcentaje libro correcto: <span id="porcentaje-libro"></span>%</p>
+      <p>Porcentaje capítulo correcto: <span id="porcentaje-capitulo"></span>%</p>
+      <button id="btn-reiniciar">Reiniciar Quiz</button>
+      <button id="btn-cambiar-bloque">Cambiar Bloque</button>
     </div>
   </div>
 
