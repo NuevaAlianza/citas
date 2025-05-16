@@ -1,104 +1,95 @@
+/* Paleta Dorado - Negro - Elegante */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #121212;
-  color: #d4af37; /* Dorado */
-  margin: 0; padding: 20px;
+  color: #d4af37;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 20px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
   min-height: 100vh;
+  align-items: center;
 }
 
-h1, h2 {
-  color: #f5d442;
+.container {
+  max-width: 600px;
+  width: 100%;
+  background: #1e1e1e;
+  border-radius: 10px;
+  padding: 20px 30px;
+  box-shadow: 0 0 15px #d4af37;
+}
+
+h1, h2, h3 {
+  text-align: center;
+  color: #d4af37;
+  margin-bottom: 15px;
 }
 
 button {
   background-color: #d4af37;
   border: none;
   color: #121212;
-  padding: 12px 24px;
-  margin-top: 20px;
   font-weight: bold;
+  padding: 10px 20px;
+  margin: 10px auto;
   cursor: pointer;
-  border-radius: 6px;
+  display: block;
+  border-radius: 5px;
   transition: background-color 0.3s ease;
-  font-size: 1.1rem;
-  user-select: none;
 }
 
 button:disabled {
-  background-color: #8c7a2f;
+  background-color: #7a6f2b;
   cursor: not-allowed;
 }
 
 button:hover:not(:disabled) {
-  background-color: #f5d442;
+  background-color: #c39b20;
 }
 
-.oculto {
+.hidden {
   display: none;
 }
 
-#respuestas {
+.opciones {
   display: flex;
   justify-content: space-around;
-  width: 100%;
-  max-width: 700px;
-  margin-top: 15px;
-  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
 }
 
-#opcionesLibro button,
-#opcionesCapitulo button {
-  background-color: #2a2a2a;
-  border: 2px solid #d4af37;
-  color: #d4af37;
-  padding: 12px 16px;
-  margin: 4px;
-  border-radius: 4px;
-  cursor: pointer;
-  min-width: 90px;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  font-size: 1rem;
-  user-select: none;
+.opciones div {
+  flex: 1 1 45%;
+  text-align: center;
 }
 
-#opcionesLibro button.seleccionado,
-#opcionesCapitulo button.seleccionado {
-  /* no cambia color al seleccionar para dar feedback solo al elegir */
+.opciones button {
+  margin: 5px;
+  min-width: 80px;
 }
 
-#opcionesLibro button.correcto,
-#opcionesCapitulo button.correcto {
-  background-color: #4caf50;
+.opciones button.correcto {
+  background-color: #4caf50 !important;
   color: white;
-  border-color: #4caf50;
 }
 
-#opcionesLibro button.incorrecto,
-#opcionesCapitulo button.incorrecto {
-  background-color: #e53935;
+.opciones button.incorrecto {
+  background-color: #e53935 !important;
   color: white;
-  border-color: #e53935;
 }
 
 /* Responsive */
-
-@media (max-width: 600px) {
-  #respuestas {
+@media (max-width: 480px) {
+  .container {
+    padding: 15px 20px;
+  }
+  .opciones {
     flex-direction: column;
     align-items: center;
   }
-  #opcionesLibro button,
-  #opcionesCapitulo button {
-    width: 90vw;
-    max-width: 300px;
-    font-size: 1.2rem;
-  }
-  button {
-    width: 90vw;
-    max-width: 300px;
-    font-size: 1.2rem;
+  .opciones div {
+    width: 100%;
+    margin-bottom: 15px;
   }
 }
