@@ -1,49 +1,101 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Quiz de citas bíblicas</title>
-  <link rel="stylesheet" href="css/styles.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quiz Citas Bíblicas - Selección de Bloque</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+  #quiz-container {
+    margin-top: 20px;
+  }
+</style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Quiz de Citas Bíblicas</h1>
+<h1>Quiz Citas Bíblicas</h1>
 
-    <div id="menu-bloques" class="menu-bloques">
-      <label for="select-bloque">Selecciona un bloque:</label>
-      <select id="select-bloque"></select>
-      <button id="btn-iniciar">Iniciar Quiz</button>
-    </div>
+<div id="selector-bloque">
+  <label for="bloque-select">Elige un bloque:</label>
+  <select id="bloque-select">
+    <option value="" disabled selected>Seleccione un bloque</option>
+  </select>
+  <button id="btn-comenzar" disabled>Comenzar</button>
+</div>
 
-    <div id="quiz" class="quiz" style="display:none;">
-      <div id="progreso"></div>
-      <p id="cita" class="cita-texto"></p>
+<div id="quiz-container" style="display:none;">
+  <!-- Aquí se cargarán las preguntas -->
+  <p><em>Las preguntas se cargarán aquí...</em></p>
+</div>
 
-      <div class="opciones">
-        <div>
-          <p><strong>¿En qué libro está esta cita?</strong></p>
-          <div id="opciones-libro" class="botones-opcion"></div>
-        </div>
-        <div>
-          <p><strong>¿Qué capítulo?</strong></p>
-          <div id="opciones-capitulo" class="botones-opcion"></div>
-        </div>
-      </div>
+<script>
+// Variables globales
+let datosQuiz = null;
+let bloqueSeleccionado = null;
 
-      <button id="btn-confirmar" disabled>Confirmar respuesta</button>
-      <div id="feedback" class="feedback"></div>
-    </div>
+// Función para cargar JSON
+async function cargarDatos() {
+  try {
+    const response = await fetch('citas.json');
+    if (!response.ok) throw new Error('No se pudo cargar el archivo citas.json');
+    datosQuiz = await response.json();
+    cargarOpcionesBloques();
+  } catch (error) {
+    alert('Error cargando datos: ' + error.message);
+  }
+}
 
-    <div id="resultado" class="resultado" style="display:none;">
-      <h2>Resultados</h2>
-      <p id="mensaje-final"></p>
-      <button id="btn-reiniciar">Reiniciar mismo bloque</button>
-      <button id="btn-cambiar-bloque">Cambiar bloque</button>
-    </div>
-  </div>
+// Rellenar el select con los bloques
+function cargarOpcionesBloques() {
+  const select = document.getElementById('bloque-select');
+  datosQuiz.bloques.forEach((bloque, index) => {
+    const option = document.createElement('option');
+    option.value = index;
+    option.textContent = bloque.nombre;
+    select.appendChild(option);
+  });
+}
 
-  <script src="js/script.js"></script>
+// Evento al cambiar selección para habilitar botón comenzar
+document.getElementById('bloque-select').addEventListener('change', function () {
+  document.getElementById('btn-comenzar').disabled = !this.value;
+});
+
+// Evento click en botón comenzar
+document.getElementById('btn-comenzar').addEventListener('click', function () {
+  const select = document.getElementById('bloque-select');
+  const index = select.value;
+  bloqueSeleccionado = datosQuiz.bloques[index];
+
+  // Ocultar selector y botón
+  document.getElementById('selector-bloque').style.display = 'none';
+
+  // Mostrar el contenedor del quiz
+  document.getElementById('quiz-container').style.display = 'block';
+
+  // Cargar preguntas del bloque (por ahora solo mostramos un mensaje)
+  mostrarPreguntas();
+});
+
+// Función para mostrar las preguntas (simple demo)
+function mostrarPreguntas() {
+  const contenedor = document.getElementById('quiz-container');
+  contenedor.innerHTML = ''; // limpiar
+
+  bloqueSeleccionado.preguntas.forEach((pregunta, i) => {
+    const p = document.createElement('p');
+    p.textContent = `Pregunta ${i + 1}: ${pregunta.cita}`;
+    contenedor.appendChild(p);
+  });
+}
+
+// Al cargar la página, cargar el JSON
+window.onload = cargarDatos;
+
+</script>
+
 </body>
 </html>
-
