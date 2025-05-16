@@ -85,15 +85,35 @@ function evaluarRespuesta(opcionElegida) {
 function mostrarResultadoFinal() {
   document.getElementById('quiz').style.display = 'none';
   const total = preguntasFiltradas.length;
+
+  const porcentajeLibros = Math.round((aciertosLibro / total) * 100);
+  const porcentajeCapitulos = Math.round((aciertosCapitulo / total) * 100);
+
+  const promedio = Math.round((porcentajeLibros + porcentajeCapitulos) / 2);
+  let mensajeNivel = '';
+  if (promedio >= 90) {
+    mensajeNivel = '¡Excelente! Eres un experto en las citas bíblicas.';
+  } else if (promedio >= 70) {
+    mensajeNivel = 'Muy bien, tienes buen conocimiento, pero puedes mejorar.';
+  } else if (promedio >= 50) {
+    mensajeNivel = 'Está bien, pero te recomiendo seguir practicando.';
+  } else {
+    mensajeNivel = 'Necesitas estudiar más para mejorar tus respuestas.';
+  }
+
   const mensaje = `
     <h2>¡Has terminado el bloque!</h2>
-    <p>✅ Aciertos en LIBROS: ${aciertosLibro} / ${total}</p>
-    <p>✅ Aciertos en CAPÍTULOS: ${aciertosCapitulo} / ${total}</p>
-    <button onclick="reiniciar()">Reiniciar</button>
+    <p>✅ Aciertos en LIBROS: ${aciertosLibro} / ${total} (${porcentajeLibros}%)</p>
+    <p>✅ Aciertos en CAPÍTULOS: ${aciertosCapitulo} / ${total} (${porcentajeCapitulos}%)</p>
+    <p><strong>${mensajeNivel}</strong></p>
+    <button id="btn-volver-inicio">Volver al inicio</button>
   `;
+
   const contenedorFinal = document.getElementById('mensaje-final');
   contenedorFinal.innerHTML = mensaje;
   contenedorFinal.style.display = 'block';
+
+  document.getElementById('btn-volver-inicio').addEventListener('click', reiniciar);
 }
 
 function comenzarQuiz() {
@@ -124,6 +144,11 @@ function reiniciar() {
   document.getElementById('btn-comenzar').style.display = 'inline';
   document.getElementById('mensaje-final').style.display = 'none';
   document.getElementById('quiz').style.display = 'none';
+
+  indicePregunta = 0;
+  aciertosLibro = 0;
+  aciertosCapitulo = 0;
+  preguntandoLibro = true;
 }
 
 document.getElementById('btn-comenzar').addEventListener('click', comenzarQuiz);
