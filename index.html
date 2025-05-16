@@ -3,48 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Quiz Bíblico - Citas</title>
+  <title>Quiz Bíblico - Base Estable</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="inicio">
-    <h1>Selecciona un bloque</h1>
-    <select id="selectBloque">
-      <option value="">-- Elige un bloque --</option>
-      <!-- Aquí se cargan bloques dinámicamente -->
-    </select>
-    <button id="btnComenzar" disabled>Comenzar</button>
-  </div>
+  <div class="container">
+    <h1>Quiz Bíblico - Selecciona Bloque</h1>
 
-  <div id="quiz" class="oculto">
-    <div id="pregunta">
-      <p id="textoCita"></p>
+    <div id="inicio">
+      <select id="selectBloque">
+        <option value="">-- Elige un bloque --</option>
+      </select>
+      <button id="btnComenzar" disabled>Comenzar</button>
     </div>
-    <div id="respuestas">
-      <div>
-        <p><strong>Libro:</strong></p>
-        <div id="opcionesLibro"></div>
+
+    <div id="quiz" class="hidden">
+      <div id="preguntaActual"></div>
+      <div id="cita"></div>
+
+      <div class="opciones">
+        <div>
+          <h3>Libro</h3>
+          <div id="opcionesLibro"></div>
+        </div>
+        <div>
+          <h3>Capítulo</h3>
+          <div id="opcionesCapitulo"></div>
+        </div>
       </div>
-      <div>
-        <p><strong>Capítulo:</strong></p>
-        <div id="opcionesCapitulo"></div>
-      </div>
+
+      <button id="btnSiguiente" disabled>Siguiente</button>
     </div>
-    <button id="btnSiguiente" disabled>Siguiente</button>
-  </div>
 
-  <div id="resultado" class="oculto">
-    <h2>Resultados</h2>
-    <p id="porcentaje"></p>
-    <p id="mensaje"></p>
-    <button id="btnReiniciar">Reiniciar bloque</button>
-    <button id="btnVolver">Volver al inicio</button>
+    <div id="resultado" class="hidden">
+      <h2>Resultados</h2>
+      <p id="porcentaje"></p>
+      <p id="mensaje"></p>
+      <button id="btnReiniciar">Reiniciar bloque</button>
+      <button id="btnVolver">Volver al inicio</button>
+    </div>
   </div>
-
-  <audio id="audioCorrecto" src="sonidos/correcto.mp3"></audio>
-  <audio id="audioIncorrecto" src="sonidos/incorrecto.mp3"></audio>
 
   <script src="script.js"></script>
 </body>
 </html>
-
