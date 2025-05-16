@@ -2,268 +2,48 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quiz Bíblico: Libro y Capítulo</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      background: #fff8f0;
-      color: #333;
-    }
-    h1 {
-      color: #b8860b;
-    }
-    .cita {
-      font-size: 1.3em;
-      margin: 20px 0;
-      padding: 15px;
-      background: #fefae0;
-      border-left: 5px solid #daa520;
-    }
-    .opciones {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 15px 0;
-    }
-    button {
-      padding: 10px 16px;
-      border: none;
-      border-radius: 8px;
-      background: #ffe082;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    button:hover {
-      background: #ffcc00;
-    }
-    .resultado {
-      margin-top: 20px;
-      font-weight: bold;
-    }
-    .correcto { color: green; }
-    .incorrecto { color: red; }
-    .oculto { display: none; }
-  </style>
+  <title>Quiz de citas bíblicas</title>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <h1>Quiz Bíblico</h1>
-  <label for="bloque">Selecciona un bloque:</label>
-  <select id="bloque">
-    <option value="1">Bloque 1</option>
-    <option value="2">Bloque 2</option>
-  </select>
-  <button onclick="iniciarJuego()">Comenzar</button>
 
-  <div id="juego" class="oculto">
-    <div id="cita" class="cita"></div>
-    <h3>¿De qué libro es?</h3>
-    <div id="libros" class="opciones"></div>
-    <h3>¿Qué capítulo?</h3>
-    <div id="capitulos" class="opciones"></div>
-    <div id="resultado" class="resultado"></div>
-    <button onclick="siguientePregunta()">Siguiente</button>
+  <div class="container">
+    <h1>Quiz de Citas Bíblicas</h1>
+
+    <div id="menu-bloques" class="menu-bloques">
+      <label for="select-bloque">Selecciona un bloque:</label>
+      <select id="select-bloque"></select>
+      <button id="btn-iniciar">Iniciar Quiz</button>
+    </div>
+
+    <div id="quiz" class="quiz" style="display:none;">
+      <div id="progreso"></div>
+      <p id="cita" class="cita-texto"></p>
+
+      <div class="opciones">
+        <div>
+          <p><strong>¿En qué libro está esta cita?</strong></p>
+          <div id="opciones-libro" class="botones-opcion"></div>
+        </div>
+        <div>
+          <p><strong>¿Qué capítulo?</strong></p>
+          <div id="opciones-capitulo" class="botones-opcion"></div>
+        </div>
+      </div>
+
+      <button id="btn-confirmar" disabled>Confirmar respuesta</button>
+      <div id="feedback" class="feedback"></div>
+    </div>
+
+    <div id="resultado" class="resultado" style="display:none;">
+      <h2>Resultados</h2>
+      <p id="mensaje-final"></p>
+      <button id="btn-reiniciar">Reiniciar mismo bloque</button>
+      <button id="btn-cambiar-bloque">Cambiar bloque</button>
+    </div>
   </div>
 
-  <script>
-    const citasPorBloque = {
-      "1": [
-        {
-          cita: "El Señor es mi pastor, nada me falta.",
-          libro: "Salmos", capitulo: 23,
-          opciones_libro: ["Salmos", "Proverbios", "Isaías", "Mateo"],
-          opciones_cap: [23, 1, 91, 3]
-        },
-        {
-          cita: "Porque tanto amó Dios al mundo que dio a su Hijo unigénito...",
-          libro: "Juan", capitulo: 3,
-          opciones_libro: ["Juan", "Mateo", "Romanos", "Génesis"],
-          opciones_cap: [3, 6, 1, 10]
-        },
-        {
-          cita: "Yo soy el camino, la verdad y la vida.",
-          libro: "Juan", capitulo: 14,
-          opciones_libro: ["Juan", "Lucas", "Hechos", "Apocalipsis"],
-          opciones_cap: [14, 3, 10, 21]
-        },
-        {
-          cita: "No temas, porque yo estoy contigo.",
-          libro: "Isaías", capitulo: 41,
-          opciones_libro: ["Isaías", "Jeremías", "Ezequiel", "Daniel"],
-          opciones_cap: [41, 40, 43, 44]
-        },
-        {
-          cita: "En el principio creó Dios los cielos y la tierra.",
-          libro: "Génesis", capitulo: 1,
-          opciones_libro: ["Génesis", "Éxodo", "Levítico", "Números"],
-          opciones_cap: [1, 2, 3, 4]
-        },
-        {
-          cita: "Bienaventurados los pobres en espíritu...",
-          libro: "Mateo", capitulo: 5,
-          opciones_libro: ["Mateo", "Marcos", "Lucas", "Juan"],
-          opciones_cap: [5, 6, 7, 8]
-        },
-        {
-          cita: "Todo lo puedo en Cristo que me fortalece.",
-          libro: "Filipenses", capitulo: 4,
-          opciones_libro: ["Filipenses", "Colosenses", "Efesios", "Tesalonicenses"],
-          opciones_cap: [4, 3, 2, 5]
-        },
-        {
-          cita: "El que habita al abrigo del Altísimo morará bajo la sombra del Omnipotente.",
-          libro: "Salmos", capitulo: 91,
-          opciones_libro: ["Salmos", "Proverbios", "Job", "Isaías"],
-          opciones_cap: [91, 90, 92, 93]
-        },
-        {
-          cita: "Porque donde están dos o tres congregados en mi nombre...",
-          libro: "Mateo", capitulo: 18,
-          opciones_libro: ["Mateo", "Marcos", "Hechos", "Romanos"],
-          opciones_cap: [18, 16, 20, 15]
-        },
-        {
-          cita: "No os conforméis a este mundo, sino transformaos por la renovación de vuestra mente.",
-          libro: "Romanos", capitulo: 12,
-          opciones_libro: ["Romanos", "Corintios", "Efesios", "Gálatas"],
-          opciones_cap: [12, 13, 11, 10]
-        }
-      ],
-      "2": [
-        {
-          cita: "Amarás a tu prójimo como a ti mismo.",
-          libro: "Mateo", capitulo: 22,
-          opciones_libro: ["Mateo", "Levítico", "Deuteronomio", "Números"],
-          opciones_cap: [22, 20, 25, 23]
-        },
-        {
-          cita: "El que no ama no conoce a Dios, porque Dios es amor.",
-          libro: "1 Juan", capitulo: 4,
-          opciones_libro: ["1 Juan", "Juan", "Romanos", "Efesios"],
-          opciones_cap: [4, 3, 2, 5]
-        },
-        {
-          cita: "Confía en el Señor con todo tu corazón.",
-          libro: "Proverbios", capitulo: 3,
-          opciones_libro: ["Proverbios", "Salmos", "Eclesiastés", "Isaías"],
-          opciones_cap: [3, 4, 5, 6]
-        },
-        {
-          cita: "Todo tiene su tiempo, y todo lo que se quiere debajo del cielo su hora.",
-          libro: "Eclesiastés", capitulo: 3,
-          opciones_libro: ["Eclesiastés", "Salmos", "Proverbios", "Job"],
-          opciones_cap: [3, 4, 5, 6]
-        },
-        {
-          cita: "El justo florecerá como la palmera.",
-          libro: "Salmos", capitulo: 92,
-          opciones_libro: ["Salmos", "Isaías", "Jeremías", "Job"],
-          opciones_cap: [92, 93, 90, 91]
-        },
-        {
-          cita: "La fe es la certeza de lo que se espera.",
-          libro: "Hebreos", capitulo: 11,
-          opciones_libro: ["Hebreos", "Romanos", "Efesios", "Gálatas"],
-          opciones_cap: [11, 10, 12, 9]
-        },
-        {
-          cita: "Sed siempre humildes y amables.",
-          libro: "Efesios", capitulo: 4,
-          opciones_libro: ["Efesios", "Filipenses", "Colosenses", "Tesalonicenses"],
-          opciones_cap: [4, 3, 5, 6]
-        },
-        {
-          cita: "No os hagáis tesoros en la tierra.",
-          libro: "Mateo", capitulo: 6,
-          opciones_libro: ["Mateo", "Lucas", "Juan", "Marcos"],
-          opciones_cap: [6, 5, 7, 4]
-        },
-        {
-          cita: "Honra a tu padre y a tu madre.",
-          libro: "Éxodo", capitulo: 20,
-          opciones_libro: ["Éxodo", "Levítico", "Deuteronomio", "Números"],
-          opciones_cap: [20, 18, 22, 21]
-        },
-        {
-          cita: "El Señor es mi luz y mi salvación; ¿a quién temeré?",
-          libro: "Salmos", capitulo: 27,
-          opciones_libro: ["Salmos", "Isaías", "Jeremías", "Job"],
-          opciones_cap: [27, 26, 28, 25]
-        }
-      ]
-    };
-
-    let preguntas = [], indice = 0;
-
-    function iniciarJuego() {
-      const bloqueSeleccionado = document.getElementById("bloque").value;
-      preguntas = [...citasPorBloque[bloqueSeleccionado]];
-      indice = 0;
-      document.getElementById("juego").classList.remove("oculto");
-      mostrarPregunta();
-    }
-
-    function mostrarPregunta() {
-      const p = preguntas[indice];
-      document.getElementById("cita").textContent = p.cita;
-
-      const librosDiv = document.getElementById("libros");
-      librosDiv.innerHTML = "";
-      p.opciones_libro.forEach(libro => {
-        const btn = document.createElement("button");
-        btn.textContent = libro;
-        btn.onclick = () => verificarRespuesta(libro, null);
-        librosDiv.appendChild(btn);
-      });
-
-      const capsDiv = document.getElementById("capitulos");
-      capsDiv.innerHTML = "";
-      p.opciones_cap.forEach(cap => {
-        const btn = document.createElement("button");
-        btn.textContent = cap;
-        btn.onclick = () => verificarRespuesta(null, cap);
-        capsDiv.appendChild(btn);
-      });
-
-      document.getElementById("resultado").textContent = "";
-    }
-
-    let seleccionLibro = null;
-    let seleccionCap = null;
-
-    function verificarRespuesta(libro, cap) {
-      const actual = preguntas[indice];
-      if (libro !== null) seleccionLibro = libro;
-      if (cap !== null) seleccionCap = cap;
-
-      if (seleccionLibro && seleccionCap != null) {
-        const esLibroCorrecto = seleccionLibro === actual.libro;
-        const esCapCorrecto = parseInt(seleccionCap) === actual.capitulo;
-        const resultado = document.getElementById("resultado");
-        resultado.innerHTML =
-          `<span class="${esLibroCorrecto ? "correcto" : "incorrecto"}">
-             Libro: ${esLibroCorrecto ? "✔️" : "❌"}
-           </span> | 
-           <span class="${esCapCorrecto ? "correcto" : "incorrecto"}">
-             Capítulo: ${esCapCorrecto ? "✔️" : "❌"}
-           </span>`;
-      }
-    }
-
-    function siguientePregunta() {
-      seleccionLibro = null;
-      seleccionCap = null;
-      indice++;
-      if (indice < preguntas.length) {
-        mostrarPregunta();
-      } else {
-        document.getElementById("cita").textContent = "¡Has completado todas las preguntas!";
-        document.getElementById("libros").innerHTML = "";
-        document.getElementById("capitulos").innerHTML = "";
-        document.getElementById("resultado").textContent = "";
-      }
-    }
-  </script>
+  <script src="js/script.js"></script>
 </body>
 </html>
+
