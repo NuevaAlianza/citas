@@ -1,95 +1,113 @@
-/* Paleta Dorado - Negro - Elegante */
 body {
-  background-color: #121212;
-  color: #d4af37;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: Arial, sans-serif;
+  background-color: #fff7e6;
+  color: #5a3e1b;
   margin: 0;
   padding: 20px;
-  display: flex;
-  justify-content: center;
-  min-height: 100vh;
-  align-items: center;
 }
 
 .container {
-  max-width: 600px;
-  width: 100%;
-  background: #1e1e1e;
-  border-radius: 10px;
-  padding: 20px 30px;
-  box-shadow: 0 0 15px #d4af37;
+  max-width: 650px;
+  margin: 0 auto;
+  background-color: #f9f3e7;
+  border: 2px solid #d2b48c;
+  border-radius: 8px;
+  padding: 20px;
 }
 
-h1, h2, h3 {
+h1 {
   text-align: center;
-  color: #d4af37;
+  color: #a05a0a;
+}
+
+.menu-bloques {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+#cita {
+  font-size: 1.3rem;
   margin-bottom: 15px;
-}
-
-button {
-  background-color: #d4af37;
-  border: none;
-  color: #121212;
-  font-weight: bold;
-  padding: 10px 20px;
-  margin: 10px auto;
-  cursor: pointer;
-  display: block;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
-
-button:disabled {
-  background-color: #7a6f2b;
-  cursor: not-allowed;
-}
-
-button:hover:not(:disabled) {
-  background-color: #c39b20;
-}
-
-.hidden {
-  display: none;
+  font-style: italic;
 }
 
 .opciones {
   display: flex;
-  justify-content: space-around;
-  margin: 20px 0;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  gap: 10px;
 }
 
-.opciones div {
+.botones-opcion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.botones-opcion button {
+  background-color: #d2b48c;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #5a3e1b;
+  font-weight: bold;
   flex: 1 1 45%;
+  transition: background-color 0.3s;
+}
+
+.botones-opcion button:hover {
+  background-color: #a05a0a;
+  color: white;
+}
+
+.botones-opcion button.selected {
+  background-color: #a05a0a;
+  color: white;
+}
+
+#btn-confirmar {
+  background-color: #a05a0a;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  width: 100%;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+#btn-confirmar:disabled {
+  background-color: #d2b48c;
+  cursor: not-allowed;
+}
+
+.feedback {
+  margin-top: 10px;
+  font-weight: bold;
+  min-height: 24px;
+  font-size: 1.1rem;
+}
+
+.resultado {
   text-align: center;
 }
 
-.opciones button {
-  margin: 5px;
-  min-width: 80px;
-}
-
-.opciones button.correcto {
-  background-color: #4caf50 !important;
+.resultado button {
+  margin: 10px 5px;
+  background-color: #a05a0a;
   color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: bold;
 }
 
-.opciones button.incorrecto {
-  background-color: #e53935 !important;
-  color: white;
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-  .container {
-    padding: 15px 20px;
-  }
-  .opciones {
-    flex-direction: column;
-    align-items: center;
-  }
-  .opciones div {
-    width: 100%;
-    margin-bottom: 15px;
-  }
+#progreso {
+  font-weight: bold;
+  margin-bottom: 10px;
 }
